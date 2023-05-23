@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
 const paths = express.Router();
+//untuk ngecek" console.log(req);
 
 // TODO: Sesuaikan konfigurasi database
 const connection = mysql.createConnection({
@@ -11,8 +12,23 @@ const connection = mysql.createConnection({
 });
 
 paths.get('/all', (req, res) => {
-   console.log(req);
-   const query = 'select * from user';
+   const query = `select * from users`;
+   connection.query(query, (err, rows, field) => {
+      if (err) {
+         res.status(200).send({ message: err.sqlMessage });
+      } else {
+         res.json(rows);
+      }
+   });
+});
+
+paths.get('/register', (req, res) => {
+   const name = name;
+   const email = email;
+   const password1 = password1;
+   const password2 = password2;
+
+   const query = `INSERT INTO users VALUES(NULL, '$name', '$email', '$password1', '$password2' )`;
    connection.query(query, (err, rows, field) => {
       if (err) {
          res.status(200).send({ message: err.sqlMessage });

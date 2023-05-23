@@ -1,5 +1,5 @@
 const express = require('express');
-const router = require('./routes/paths');
+const paths = require('./routes/paths');
 const app = express();
 const port = 8080;
 
@@ -8,11 +8,11 @@ const port = 8080;
 // app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
-   res.send('Hello World!');
+   res.send('hi klean smua');
 });
 
-app.use(router);
+app.use(paths);
 
 app.listen(port, () => {
-   console.log(`Example app listening on port ${port}`);
+   console.log(`http://localhost:${port}/`);
 });

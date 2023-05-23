@@ -1,6 +1,6 @@
 const express = require('express');
 const mysql = require('mysql');
-const router = express.Router();
+const paths = express.Router();
 
 // TODO: Sesuaikan konfigurasi database
 const connection = mysql.createConnection({
@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
    password: '/dR/%prDH0I5r)F>',
 });
 
-router.get('/all', (req, res) => {
+paths.get('/all', (req, res) => {
    console.log(req);
    const query = 'select * from user';
    connection.query(query, (err, rows, field) => {
@@ -22,7 +22,7 @@ router.get('/all', (req, res) => {
    });
 });
 
-module.exports = router;
+module.exports = paths;
 // router.get('/dashboard', (req, res) => {
 //    const query =
 //       'select (select count(*) from records where month(records.date) = month(now()) AND year(records.date) = year(now())) as month_records, (select sum(amount) from records) as total_amount;';

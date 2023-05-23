@@ -10,10 +10,6 @@ const connection = mysql.createConnection({
    password: '/dR/%prDH0I5r)F>',
 });
 
-if (!connection) {
-   console.log('gagal');
-}
-
 router.get('/all', (req, res) => {
    console.log(req);
    const query = 'select * from user';

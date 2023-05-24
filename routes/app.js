@@ -1,5 +1,8 @@
 const express = require('express');
 const mysql = require('mysql');
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // Jumlah salt rounds yang digunakan untuk menghasilkan salt
+
 const app = express.Router();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -41,20 +44,69 @@ app.get('/all', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-   var name = req.body.name;
-   var email = req.body.email;
-   var password1 = req.body.password1;
-   var password2 = req.body.password2;
+   var { name, email, password1, password2 } = req.body;
+   if (password1 === password2) {
 
-   const query = `INSERT INTO users(nameUser, email, password1, password2) VALUES ('${name}', '${email}', '${password1}', '${password2}' )`;
-   connection.query(query, (err, result) => {
+      // Membuat salt untuk hashing password
+      bcrypt.genSalt(saltRounds, (err, salt) => {
+         if (err) {
+            return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+         }
+
+         // Meng-hash password dengan salt yang dihasilkan
+         bcrypt.hash(password1, salt, (err, hash) => {
+            if (err) {
+               return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+            }
+            const queryRegister = `INSERT INTO users(nameUser, email, password1, password2) VALUES (?,?,?,?)`;
+            connection.query(queryRegister, [name, email, hash, password2], (err, result) => {
+               if (err) {
+                  res.status(500).send({ message: err.sqlMessage });
+               } else {
+                  res.json(result);
+               }
+            });
+         });
+      });
+   } else {
+      res.status(500).json({ message: 'Password tidak sama' });
+   }
+});
+
+app.post('/login', (req, res) => {
+   var { email, password } = req.body;
+
+   const queryLogin = `SELECT * FROM users WHERE email = ?`;
+   connection.query(queryLogin, [email], (err, result) => {
       if (err) {
          res.status(500).send({ message: err.sqlMessage });
+      }
+
+      if (result.length > 0) {
+         const user = result[0];
+
+         // Membandingkan password yang diinput dengan password yang tersimpan dalam database
+         bcrypt.compare(password, user.password1, (err, isMatch) => {
+            if (err) {
+               // Mengirimkan respons jika terjadi kesalahan pada bcrypt
+               return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+            }
+
+            if (isMatch) {
+               // Jika autentikasi berhasil
+               res.status(200).json({ message: 'Login berhasil' });
+            } else {
+               // Jika autentikasi gagal
+               res.status(401).json({ message: 'Password tidak cocok' });
+            }
+         });
       } else {
-         res.json(result);
+         // Jika pengguna tidak ditemukan
+         res.status(401).json({ message: 'Pengguna tidak ditemukan' });
       }
    });
 });
+
 
 module.exports = app;
 // router.get('/dashboard', (req, res) => {

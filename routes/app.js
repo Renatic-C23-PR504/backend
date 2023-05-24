@@ -1,17 +1,16 @@
 const express = require('express');
 const mysql = require('mysql');
-const paths = express.Router();
+const app = express.Router();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const sessions = require('express-session');
-const http = require('http');
 
 // nangkep form jadi json
-paths.use(bodyParser.json());
+app.use(bodyParser.json());
 let encodeUrl = bodyParser.urlencoded({ extended: false });
 
 //untuk ngecek" console.log(req);
-paths.use(
+app.use(
    sessions({
       secret: 'thisismysecrctekey',
       saveUninitialized: true,
@@ -20,7 +19,7 @@ paths.use(
    })
 );
 
-paths.use(cookieParser());
+app.use(cookieParser());
 
 // TODO: Sesuaikan konfigurasi database
 const connection = mysql.createConnection({
@@ -30,11 +29,7 @@ const connection = mysql.createConnection({
    password: '/dR/%prDH0I5r)F>',
 });
 
-paths.get('/', (req, res) => {
-   res.sendFile(__dirname + '/register.html');
-});
-
-paths.get('/all', (req, res) => {
+app.get('/all', (req, res) => {
    const query = `select * from users`;
    connection.query(query, (err, rows, field) => {
       if (err) {
@@ -45,7 +40,7 @@ paths.get('/all', (req, res) => {
    });
 });
 
-paths.post('/register', (req, res) => {
+app.post('/register', (req, res) => {
    var name = req.body.name;
    var email = req.body.email;
    var password1 = req.body.password1;
@@ -61,7 +56,7 @@ paths.post('/register', (req, res) => {
    });
 });
 
-module.exports = paths;
+module.exports = app;
 // router.get('/dashboard', (req, res) => {
 //    const query =
 //       'select (select count(*) from records where month(records.date) = month(now()) AND year(records.date) = year(now())) as month_records, (select sum(amount) from records) as total_amount;';

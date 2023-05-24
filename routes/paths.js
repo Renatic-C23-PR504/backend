@@ -1,7 +1,26 @@
 const express = require('express');
 const mysql = require('mysql');
 const paths = express.Router();
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const sessions = require('express-session');
+const http = require('http');
+
+// nangkep form jadi json
+paths.use(bodyParser.json());
+let encodeUrl = bodyParser.urlencoded({ extended: false });
+
 //untuk ngecek" console.log(req);
+paths.use(
+   sessions({
+      secret: 'thisismysecrctekey',
+      saveUninitialized: true,
+      cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 24 hours
+      resave: false,
+   })
+);
+
+paths.use(cookieParser());
 
 // TODO: Sesuaikan konfigurasi database
 const connection = mysql.createConnection({
@@ -9,6 +28,10 @@ const connection = mysql.createConnection({
    user: 'root',
    database: 'main_db',
    password: '/dR/%prDH0I5r)F>',
+});
+
+paths.get('/', (req, res) => {
+   res.sendFile(__dirname + '/register.html');
 });
 
 paths.get('/all', (req, res) => {
@@ -22,18 +45,18 @@ paths.get('/all', (req, res) => {
    });
 });
 
-paths.get('/register', (req, res) => {
-   const name = name;
-   const email = email;
-   const password1 = password1;
-   const password2 = password2;
+paths.post('/register', (req, res) => {
+   var name = req.body.name;
+   var email = req.body.email;
+   var password1 = req.body.password1;
+   var password2 = req.body.password2;
 
-   const query = `INSERT INTO users VALUES(NULL, '$name', '$email', '$password1', '$password2' )`;
-   connection.query(query, (err, rows, field) => {
+   const query = `INSERT INTO users(nameUser, email, password1, password2) VALUES ('${name}', '${email}', '${password1}', '${password2}' )`;
+   connection.query(query, (err, result) => {
       if (err) {
-         res.status(200).send({ message: err.sqlMessage });
+         res.status(500).send({ message: err.sqlMessage });
       } else {
-         res.json(rows);
+         res.json(result);
       }
    });
 });

@@ -45,32 +45,49 @@ app.get('/all', (req, res) => {
 
 app.post('/register', (req, res) => {
    var { name, email, password1, password2 } = req.body;
-   if (password1 === password2) {
 
-      // Membuat salt untuk hashing password
-      bcrypt.genSalt(saltRounds, (err, salt) => {
-         if (err) {
-            return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
-         }
-
-         // Meng-hash password dengan salt yang dihasilkan
-         bcrypt.hash(password1, salt, (err, hash) => {
+   const ifUserExist = `SELECT * FROM users WHERE email = ?`;
+   connection.query(ifUserExist, [email], (err, result) => {
+      if (err) {
+         return res.status(500).json({ message: err.sqlMessage });
+      } else if (result.length > 0) {
+         return res.status(500).json({ message: 'akun dah ada' });
+      }
+      if (password1 === password2) {
+         // Membuat salt untuk hashing password
+         bcrypt.genSalt(saltRounds, (err, salt) => {
             if (err) {
-               return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+               return res
+                  .status(500)
+                  .json({ message: 'Terjadi kesalahan pada server' });
             }
-            const queryRegister = `INSERT INTO users(nameUser, email, password1, password2) VALUES (?,?,?,?)`;
-            connection.query(queryRegister, [name, email, hash, password2], (err, result) => {
+
+            // Meng-hash password dengan salt yang dihasilkan
+            bcrypt.hash(password1, salt, (err, hash) => {
                if (err) {
-                  res.status(500).send({ message: err.sqlMessage });
-               } else {
-                  res.json(result);
+                  return res
+                     .status(500)
+                     .json({ message: 'Terjadi kesalahan pada server' });
                }
+
+               const queryRegister = `INSERT INTO users(nameUser, email, password1, password2) VALUES (?,?,?,?)`;
+               connection.query(
+                  queryRegister,
+                  [name, email, hash, password2],
+                  (err, result) => {
+                     if (err) {
+                        res.status(500).send({ message: err.sqlMessage });
+                     } else {
+                        res.json(result);
+                     }
+                  }
+               );
             });
          });
-      });
-   } else {
-      res.status(500).json({ message: 'Password tidak sama' });
-   }
+      } else {
+         res.status(500).json({ message: 'Password tidak sama' });
+      }
+   });
 });
 
 app.post('/login', (req, res) => {
@@ -89,7 +106,9 @@ app.post('/login', (req, res) => {
          bcrypt.compare(password, user.password1, (err, isMatch) => {
             if (err) {
                // Mengirimkan respons jika terjadi kesalahan pada bcrypt
-               return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+               return res
+                  .status(500)
+                  .json({ message: 'Terjadi kesalahan pada server' });
             }
 
             if (isMatch) {
@@ -107,16 +126,4 @@ app.post('/login', (req, res) => {
    });
 });
 
-
 module.exports = app;
-// router.get('/dashboard', (req, res) => {
-//    const query =
-//       'select (select count(*) from records where month(records.date) = month(now()) AND year(records.date) = year(now())) as month_records, (select sum(amount) from records) as total_amount;';
-//    connection.query(query, (err, rows, field) => {
-//       if (err) {
-//          res.status(500).send({ message: err.sqlMessage });
-//       } else {
-//          res.json(rows);
-//       }
-//    });
-// });

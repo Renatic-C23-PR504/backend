@@ -126,4 +126,28 @@ app.post('/login', (req, res) => {
    });
 });
 
+app.get('/profile', (req, res) => {
+   const userProfile = `SELECT * FROM users`;
+   connection.query(userProfile, (err, result) => {
+      if (err) {
+         res.status(500).send({ message: err.sqlMessage });
+      }
+      res.status(200).json({
+         message: 'Data berhasil ditemukan',
+         data: result,
+      });
+   });
+});
+
 module.exports = app;
+// router.get('/dashboard', (req, res) => {
+//    const query =
+//       'select (select count(*) from records where month(records.date) = month(now()) AND year(records.date) = year(now())) as month_records, (select sum(amount) from records) as total_amount;';
+//    connection.query(query, (err, rows, field) => {
+//       if (err) {
+//          res.status(500).send({ message: err.sqlMessage });
+//       } else {
+//          res.json(rows);
+//       }
+//    });
+// });

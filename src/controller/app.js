@@ -1,5 +1,4 @@
 const express = require('express');
-const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // Jumlah salt rounds yang digunakan untuk menghasilkan salt
 
@@ -10,29 +9,24 @@ const sessions = require('express-session');
 
 // nangkep form jadi json
 app.use(bodyParser.json());
-let encodeUrl = bodyParser.urlencoded({ extended: false });
+// app.use(bodyParser.urlencoded({ extended: false }));
 
 //untuk ngecek" console.log(req);
-app.use(
-   sessions({
-      secret: 'thisismysecrctekey',
-      saveUninitialized: true,
-      cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 24 hours
-      resave: false,
-   })
-);
+// app.use(
+//    sessions({
+//       secret: 'thisismysecrctekey',
+//       saveUninitialized: true,
+//       cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 24 hours
+//       resave: false,
+//    })
+// );
 
-app.use(cookieParser());
+// app.use(cookieParser());
 
 // TODO: Sesuaikan konfigurasi database
-const connection = mysql.createConnection({
-   host: '34.101.152.116',
-   user: 'root',
-   database: 'main_db',
-   password: '/dR/%prDH0I5r)F>',
-});
+const connection = require('../database');
 
-app.get('/all', (req, res) => {
+let all = (req, res) => {
    const query = `select * from users`;
    connection.query(query, (err, rows, field) => {
       if (err) {
@@ -41,20 +35,24 @@ app.get('/all', (req, res) => {
          res.json(rows);
       }
    });
-});
+};
 
-app.post('/register', (req, res) => {
+const registerUser = (req, res) => {
    var { name, email, password1, password2 } = req.body;
+
+   if (!name || !email || !password1 || !password2) {
+      return res.status(400).json({ message: 'Invalid request body' });
+   }
 
    const ifUserExist = `SELECT * FROM users WHERE email = ?`;
    connection.query(ifUserExist, [email], (err, result) => {
       if (err) {
          return res.status(500).json({ message: err.sqlMessage });
       } else if (result.length > 0) {
-         return res.status(500).json({ message: 'akun dah ada' });
+         return res.status(500).json({ message: 'akun sudah ada' });
       }
       if (password1 === password2) {
-         // Membuat salt untuk hashing password
+         const saltRounds = 10; // Define the number of salt rounds
          bcrypt.genSalt(saltRounds, (err, salt) => {
             if (err) {
                return res
@@ -62,7 +60,6 @@ app.post('/register', (req, res) => {
                   .json({ message: 'Terjadi kesalahan pada server' });
             }
 
-            // Meng-hash password dengan salt yang dihasilkan
             bcrypt.hash(password1, salt, (err, hash) => {
                if (err) {
                   return res
@@ -88,9 +85,9 @@ app.post('/register', (req, res) => {
          res.status(500).json({ message: 'Password tidak sama' });
       }
    });
-});
+};
 
-app.post('/login', (req, res) => {
+const loginUser = (req, res) => {
    var { email, password } = req.body;
 
    const queryLogin = `SELECT * FROM users WHERE email = ?`;
@@ -104,12 +101,16 @@ app.post('/login', (req, res) => {
 
          // Membandingkan password yang diinput dengan password yang tersimpan dalam database
          bcrypt.compare(password, user.password1, (err, isMatch) => {
+            console.log(password);
+            console.log(user.password1);
             if (err) {
-               // Mengirimkan respons jika terjadi kesalahan pada bcrypt
+               console.error(err); // Log the error to the console for debugging
                return res
                   .status(500)
                   .json({ message: 'Terjadi kesalahan pada server' });
             }
+
+            console.log('Comparing passwords:', password, user.password1); // Log the passwords for debugging
 
             if (isMatch) {
                // Jika autentikasi berhasil
@@ -121,25 +122,25 @@ app.post('/login', (req, res) => {
          });
       } else {
          // Jika pengguna tidak ditemukan
-         res.status(401).json({ message: 'Pengguna tidak ditemukan' });
+         return res.status(401).json({ message: 'Pengguna tidak ditemukan' });
       }
    });
-});
+};
 
-app.get('/profile', (req, res) => {
-   const userProfile = `SELECT * FROM users`;
-   connection.query(userProfile, (err, result) => {
-      if (err) {
-         res.status(500).send({ message: err.sqlMessage });
-      }
-      res.status(200).json({
-         message: 'Data berhasil ditemukan',
-         data: result,
-      });
-   });
-});
+// app.get('/profile/:id', (req, res) => {
+//    const userProfile = `SELECT * FROM users`;
+//    connection.query(userProfile, (err, result) => {
+//       if (err) {
+//          res.status(500).send({ message: err.sqlMessage });
+//       }
+//       res.status(200).json({
+//          message: 'Data berhasil ditemukan',
+//          data: result,
+//       });
+//    });
+// });
 
-module.exports = app;
+module.exports = { all, registerUser, loginUser };
 // router.get('/dashboard', (req, res) => {
 //    const query =
 //       'select (select count(*) from records where month(records.date) = month(now()) AND year(records.date) = year(now())) as month_records, (select sum(amount) from records) as total_amount;';

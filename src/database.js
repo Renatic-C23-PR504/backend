@@ -1,9 +1,9 @@
 const mysql = require('mysql');
 const dbPool = mysql.createConnection({
-   host: process.env.DB_HOST,
-   user: process.env.DB_USERNAME,
-   database: process.env.DB_NAME,
-   password: process.env.DB_PASSWORD,
+   host: '34.101.152.116',
+   user: 'root',
+   database: 'main_db',
+   password: '/dR/\%prDH0I5r\)F>',
 });
 
 module.exports = dbPool;

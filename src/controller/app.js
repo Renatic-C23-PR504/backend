@@ -101,16 +101,15 @@ const loginUser = (req, res) => {
 
          // Membandingkan password yang diinput dengan password yang tersimpan dalam database
          bcrypt.compare(password, user.password1, (err, isMatch) => {
-            console.log(password);
-            console.log(user.password1);
+            // console.log(password);
+            // console.log(user.password1);
             if (err) {
                console.error(err); // Log the error to the console for debugging
                return res
-                  .status(500)
-                  .json({ message: 'Terjadi kesalahan pada server' });
+                  .status(500).json({ message: 'Terjadi kesalahan pada server' });
             }
-
-            console.log('Comparing passwords:', password, user.password1); // Log the passwords for debugging
+            // Log the passwords for debugging
+            // console.log('Comparing passwords:', password, user.password1);
 
             if (isMatch) {
                // Jika autentikasi berhasil

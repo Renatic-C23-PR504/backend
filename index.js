@@ -1,9 +1,8 @@
+require('dotenv').config()
 const express = require('express');
 const router = require('./routes/router');
 const app = express();
-const port = 8080;
-
-// require('dotenv').config();
+const port = process.env.PORT;
 
 app.get('/', (req, res) => {
    res.send('hi klean smua');

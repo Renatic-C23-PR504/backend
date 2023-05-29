@@ -127,13 +127,13 @@ const profileUser = (req, res) => {
    let { id } = req.params.id;
 
    const profileUserId = `SELECT * FROM users WHERE idUser = ?`;
-   connection.query(profileUserId, [id], (err, result) => {
+   connection.query(profileUserId, [id], (err, rows) => {
       if (err) {
-         res.status(500).send({ message: err.sqlMessage });
+         res.status(500).send({ message: 'Data tidak ditemukan' });
       }
       res.status(200).json({
          message: 'Data berhasil ditemukan',
-         data: result,
+         result: { data: rows },
       });
    });
 };

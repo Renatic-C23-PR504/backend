@@ -14,7 +14,7 @@ const { addPatients, allPatients } = require('../src/controller/patients');
 router.get('/all', all);
 router.get('/allp', allPatients);
 router.post('/register', registerUser);
-router.get('/login', loginUser);
+router.post('/login', loginUser);
 router.get('/profile/:id', auth, profileUser);
 router.post('/patient', auth, addPatients);
 

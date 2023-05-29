@@ -9,6 +9,7 @@ const {
    profileUser,
 } = require('../src/controller/app');
 router.use(express.json());
+const {} = require('../src/controller/patients');
 
 router.get('/all', all);
 router.post('/register', registerUser);

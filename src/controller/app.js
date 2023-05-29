@@ -4,6 +4,7 @@ const saltRounds = 10; // Jumlah salt rounds yang digunakan untuk menghasilkan s
 const jwt = require('jsonwebtoken');
 const app = express.Router();
 const bodyParser = require('body-parser');
+const connection = require('../database');
 
 // nangkep form jadi json
 app.use(express.json());
@@ -11,7 +12,6 @@ app.use(express.json());
 
 const jwtkey = 'Lw8RKTPutNEPpy1mWrJx';
 // TODO: Sesuaikan konfigurasi database
-const connection = require('../database');
 
 let all = (req, res) => {
    const query = `select * from users`;
@@ -74,53 +74,58 @@ const registerUser = (req, res) => {
    });
 };
 
-const loginUser = (req, res) => {
-   var { email, password } = req.body;
+const loginUser = async (req, res) => {
+   try {
+      const { email, password } = req.body;
 
-   const queryLogin = `SELECT * FROM users WHERE email = ?`;
-   connection.query(queryLogin, [email], (err, result) => {
-      if (err) {
-         return res.status(500).send({ message: err.sqlMessage });
-      }
+      const queryLogin = `SELECT * FROM users WHERE email = ?`;
+      const result = await new Promise((resolve, reject) => {
+         connection.query(queryLogin, [email], (err, result) => {
+            if (err) {
+               reject(err);
+            } else {
+               resolve(result);
+            }
+         });
+      });
 
       if (result.length > 0) {
          const user = result[0];
          console.log(user);
-         // Membandingkan password yang diinput dengan password yang tersimpan dalam database
-         bcrypt.compare(password, user.password1, (err, isMatch) => {
-            if (err) {
-               console.error(err); // Log the error to the console for debugging
-               return res
-                  .status(500)
-                  .json({ message: 'Terjadi kesalahan pada server' });
-            }
-            // Log the passwords for debugging
-            // console.log('Comparing passwords:', password, user.password1);
 
-            if (isMatch) {
-               const token = jwt.sign(
-                  { id: user.idUser, email: user.email },
-                  jwtkey
-               );
-
-               const userToken = {
-                  id: user.idUser,
-                  email: user.email,
-                  token: token,
-               };
-               // Jika autentikasi berhasil
-
-               res.status(201).json(userToken);
-            } else {
-               // Jika autentikasi gagal
-               res.status(401).json({ message: 'Password tidak cocok' });
-            }
+         const isMatch = await new Promise((resolve, reject) => {
+            bcrypt.compare(password, user.password1, (err, isMatch) => {
+               if (err) {
+                  reject(err);
+               } else {
+                  resolve(isMatch);
+               }
+            });
          });
+
+         if (isMatch) {
+            const token = jwt.sign(
+               { id: user.idUser, email: user.email },
+               jwtkey
+            );
+
+            const userToken = {
+               id: user.idUser,
+               email: user.email,
+               token: token,
+            };
+
+            res.status(201).json(userToken);
+         } else {
+            res.status(401).json({ message: 'Password tidak cocok' });
+         }
       } else {
-         // Jika pengguna tidak ditemukan
          return res.status(401).json({ message: 'Pengguna tidak ditemukan' });
       }
-   });
+   } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+   }
 };
 
 const profileUser = (req, res) => {

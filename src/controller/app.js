@@ -1,27 +1,15 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // Jumlah salt rounds yang digunakan untuk menghasilkan salt
-
+const jwt = require('jsonwebtoken');
 const app = express.Router();
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const sessions = require('express-session');
 
 // nangkep form jadi json
 app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
 
-// app.use(
-//    sessions({
-//       secret: 'thisismysecrctekey',
-//       saveUninitialized: true,
-//       cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 24 hours
-//       resave: false,
-//    })
-// );
-
-// app.use(cookieParser());
-
+const jwtkey = 'Lw8RKTPutNEPpy1mWrJx';
 // TODO: Sesuaikan konfigurasi database
 const connection = require('../database');
 
@@ -92,16 +80,14 @@ const loginUser = (req, res) => {
    const queryLogin = `SELECT * FROM users WHERE email = ?`;
    connection.query(queryLogin, [email], (err, result) => {
       if (err) {
-         res.status(500).send({ message: err.sqlMessage });
+         return res.status(500).send({ message: err.sqlMessage });
       }
 
       if (result.length > 0) {
          const user = result[0];
-
+         console.log(user);
          // Membandingkan password yang diinput dengan password yang tersimpan dalam database
          bcrypt.compare(password, user.password1, (err, isMatch) => {
-            // console.log(password);
-            // console.log(user.password1);
             if (err) {
                console.error(err); // Log the error to the console for debugging
                return res
@@ -112,8 +98,19 @@ const loginUser = (req, res) => {
             // console.log('Comparing passwords:', password, user.password1);
 
             if (isMatch) {
+               const token = jwt.sign(
+                  { id: user.idUser, email: user.email },
+                  jwtkey
+               );
+
+               const userToken = {
+                  id: user.idUser,
+                  email: user.email,
+                  token: token,
+               };
                // Jika autentikasi berhasil
-               res.status(200).json({ message: 'Login berhasil' });
+
+               res.status(201).json(userToken);
             } else {
                // Jika autentikasi gagal
                res.status(401).json({ message: 'Password tidak cocok' });
@@ -127,8 +124,9 @@ const loginUser = (req, res) => {
 };
 
 const profileUser = (req, res) => {
-   const userProfile = `SELECT * FROM users`;
-   connection.query(userProfile, (err, result) => {
+   let { id } = req.params;
+   const profileUserId = `SELECT * FROM users WHERE idUser = ?`;
+   connection.query(profileUserId, [id], (err, result) => {
       if (err) {
          res.status(500).send({ message: err.sqlMessage });
       }

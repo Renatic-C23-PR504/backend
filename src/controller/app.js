@@ -124,7 +124,8 @@ const loginUser = (req, res) => {
 };
 
 const profileUser = (req, res) => {
-   let { id } = req.params;
+   let { id } = req.params.id;
+
    const profileUserId = `SELECT * FROM users WHERE idUser = ?`;
    connection.query(profileUserId, [id], (err, result) => {
       if (err) {

@@ -8,10 +8,9 @@ const cookieParser = require('cookie-parser');
 const sessions = require('express-session');
 
 // nangkep form jadi json
-app.use(bodyParser.json());
+app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
 
-//untuk ngecek" console.log(req);
 // app.use(
 //    sessions({
 //       secret: 'thisismysecrctekey',
@@ -106,7 +105,8 @@ const loginUser = (req, res) => {
             if (err) {
                console.error(err); // Log the error to the console for debugging
                return res
-                  .status(500).json({ message: 'Terjadi kesalahan pada server' });
+                  .status(500)
+                  .json({ message: 'Terjadi kesalahan pada server' });
             }
             // Log the passwords for debugging
             // console.log('Comparing passwords:', password, user.password1);
@@ -126,28 +126,17 @@ const loginUser = (req, res) => {
    });
 };
 
-// app.get('/profile/:id', (req, res) => {
-//    const userProfile = `SELECT * FROM users`;
-//    connection.query(userProfile, (err, result) => {
-//       if (err) {
-//          res.status(500).send({ message: err.sqlMessage });
-//       }
-//       res.status(200).json({
-//          message: 'Data berhasil ditemukan',
-//          data: result,
-//       });
-//    });
-// });
+const profileUser = (req, res) => {
+   const userProfile = `SELECT * FROM users`;
+   connection.query(userProfile, (err, result) => {
+      if (err) {
+         res.status(500).send({ message: err.sqlMessage });
+      }
+      res.status(200).json({
+         message: 'Data berhasil ditemukan',
+         data: result,
+      });
+   });
+};
 
-module.exports = { all, registerUser, loginUser };
-// router.get('/dashboard', (req, res) => {
-//    const query =
-//       'select (select count(*) from records where month(records.date) = month(now()) AND year(records.date) = year(now())) as month_records, (select sum(amount) from records) as total_amount;';
-//    connection.query(query, (err, rows, field) => {
-//       if (err) {
-//          res.status(500).send({ message: err.sqlMessage });
-//       } else {
-//          res.json(rows);
-//       }
-//    });
-// });
+module.exports = { all, registerUser, loginUser, profileUser };

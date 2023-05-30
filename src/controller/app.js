@@ -62,7 +62,7 @@ const registerUser = (req, res) => {
                      if (err) {
                         res.status(500).send({ message: err.sqlMessage });
                      } else {
-                        res.json(result);
+                        res.status(200).json({ message: 'Akun terdaftar' });
                      }
                   }
                );

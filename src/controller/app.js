@@ -169,7 +169,7 @@ const profileUser = (req, res) => {
       }
       res.status(200).json({
          error: 'false',
-         message: 'profil ditampilkan',
+         message: 'profile ditampilkan',
          result: { data: result },
       });
    });

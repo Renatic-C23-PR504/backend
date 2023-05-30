@@ -16,6 +16,6 @@ router.get('/allp', allPatients);
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.get('/profile/:id', auth, profileUser);
-router.post('/patient', auth, addPatients);
+router.post('/addpatient', auth, addPatients);
 
 module.exports = router;

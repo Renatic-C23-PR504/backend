@@ -158,11 +158,9 @@ const loginUser = async (req, res) => {
 
 const profileUser = (req, res) => {
    let id = req.params.id;
-   console.log(id);
 
    const profileUserId = `SELECT * FROM users WHERE idUser = ?`;
    connection.query(profileUserId, [id], (err, rows, result) => {
-      console.log(rows);
       if (err) {
          res.status(500).send({
             error: 'true',

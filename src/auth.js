@@ -7,8 +7,8 @@ const auth = async (req, res, next) => {
 
    if (!authHeader) {
       return res.status(400).json({
-         message: "you don't have permission ",
-         status: 'error',
+         error: 'true',
+         message: 'anda tidak punya izin',
       });
    }
 
@@ -20,9 +20,7 @@ const auth = async (req, res, next) => {
 
       next();
    } catch (error) {
-      return res
-         .status(401)
-         .json({ message: 'token is not valid', status: 'error' });
+      return res.status(401).json({ error: 'true', message: 'token salah' });
    }
 };
 

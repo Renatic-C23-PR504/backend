@@ -28,30 +28,39 @@ const registerUser = (req, res) => {
    var { name, email, password1, password2 } = req.body;
 
    if (!name || !email || !password1 || !password2) {
-      return res.status(400).json({ message: 'Invalid request body' });
+      return res.status(400).json({
+         error: 'true',
+         message: 'Data ada yang kosong',
+      });
    }
 
    const ifUserExist = `SELECT * FROM users WHERE email = ?`;
    connection.query(ifUserExist, [email], (err, result) => {
       if (err) {
-         return res.status(500).json({ message: err.sqlMessage });
+         return res
+            .status(500)
+            .json({ error: 'true', message: 'Terjadi kesalahan pada server' });
       } else if (result.length > 0) {
-         return res.status(500).json({ message: 'akun sudah ada' });
+         return res
+            .status(500)
+            .json({ error: 'true', message: 'Akun sudah ada' });
       }
       if (password1 === password2) {
          const saltRounds = 10; // Define the number of salt rounds
          bcrypt.genSalt(saltRounds, (err, salt) => {
             if (err) {
-               return res
-                  .status(500)
-                  .json({ message: 'Terjadi kesalahan pada server' });
+               return res.status(500).json({
+                  error: 'true',
+                  message: 'Terjadi kesalahan pada server',
+               });
             }
 
             bcrypt.hash(password1, salt, (err, hash) => {
                if (err) {
-                  return res
-                     .status(500)
-                     .json({ message: 'Terjadi kesalahan pada server' });
+                  return res.status(500).json({
+                     error: 'true',
+                     message: 'Terjadi kesalahan pada server',
+                  });
                }
 
                const queryRegister = `INSERT INTO users(nameUser, email, password1, password2) VALUES (?,?,?,?)`;
@@ -60,16 +69,25 @@ const registerUser = (req, res) => {
                   [name, email, hash, password2],
                   (err, result) => {
                      if (err) {
-                        res.status(500).send({ message: err.sqlMessage });
+                        res.status(500).send({
+                           error: 'true',
+                           message: 'Terjadi kesalahan pada server',
+                        });
                      } else {
-                        res.status(200).json({ message: 'Akun terdaftar' });
+                        res.status(200).json({
+                           error: 'false',
+                           message: 'Akun berhasil di daftarkan',
+                        });
                      }
                   }
                );
             });
          });
       } else {
-         res.status(500).json({ message: 'Password tidak sama' });
+         res.status(500).json({
+            error: 'true',
+            message: 'Password tidak sama',
+         });
       }
    });
 };
@@ -79,52 +97,62 @@ const loginUser = async (req, res) => {
       const { email, password } = req.body;
 
       const queryLogin = `SELECT * FROM users WHERE email = ?`;
-      const result = await new Promise((resolve, reject) => {
-         connection.query(queryLogin, [email], (err, result) => {
-            if (err) {
-               reject(err);
-            } else {
-               resolve(result);
-            }
-         });
-      });
+      connection.query(queryLogin, [email], (err, result) => {
+         if (err) {
+            res.status(500).send({
+               error: 'true',
+               message: 'Terjadi kesalahan pada server',
+            });
+         }
 
-      if (result.length > 0) {
-         const user = result[0];
-         console.log(user);
+         if (result.length > 0) {
+            const user = result[0];
+            console.log(user);
 
-         const isMatch = await new Promise((resolve, reject) => {
             bcrypt.compare(password, user.password1, (err, isMatch) => {
                if (err) {
-                  reject(err);
+                  res.status(500).send({
+                     error: 'true',
+                     message: 'Terjadi kesalahan pada server',
+                  });
+               }
+
+               if (isMatch) {
+                  const token = jwt.sign(
+                     { id: user.idUser, email: user.email },
+                     jwtkey
+                  );
+
+                  const userToken = {
+                     id: user.idUser,
+                     email: user.email,
+                     token: token,
+                  };
+
+                  res.status(201).json({
+                     error: 'false',
+                     message: 'Berhasil login',
+                     data: userToken,
+                  });
                } else {
-                  resolve(isMatch);
+                  res.status(401).json({
+                     error: 'true',
+                     message: 'Password tidak cocok',
+                  });
                }
             });
-         });
-
-         if (isMatch) {
-            const token = jwt.sign(
-               { id: user.idUser, email: user.email },
-               jwtkey
-            );
-
-            const userToken = {
-               id: user.idUser,
-               email: user.email,
-               token: token,
-            };
-
-            res.status(201).json(userToken);
          } else {
-            res.status(401).json({ message: 'Password tidak cocok' });
+            res.status(401).json({
+               error: 'true',
+               message: 'Pengguna tidak ditemukan',
+            });
          }
-      } else {
-         return res.status(401).json({ message: 'Pengguna tidak ditemukan' });
-      }
+      });
    } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+      return res
+         .status(500)
+         .json({ error: 'true', message: 'Terjadi kesalahan pada server' });
    }
 };
 
@@ -132,13 +160,17 @@ const profileUser = (req, res) => {
    let { id } = req.params.id;
 
    const profileUserId = `SELECT * FROM users WHERE idUser = ?`;
-   connection.query(profileUserId, [id], (err, rows) => {
+   connection.query(profileUserId, [id], (err, result) => {
       if (err) {
-         res.status(500).send({ message: 'Data tidak ditemukan' });
+         res.status(500).send({
+            error: 'true',
+            message: 'Login terlebih dahulu',
+         });
       }
       res.status(200).json({
-         message: 'Data berhasil ditemukan',
-         result: { data: rows },
+         error: 'false',
+         message: 'profil ditampilkan',
+         result: { data: result },
       });
    });
 };

@@ -25,7 +25,7 @@ router.get('/profile/:id', auth, profileUser);
 
 //patient
 router.post('/addpatient', auth, addPatients);
-router.get('/patient', allPatients);
+router.get('/patient', auth, allPatients);
 router.post('/search', auth, search);
 
 module.exports = router;

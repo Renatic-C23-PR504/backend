@@ -23,13 +23,14 @@ const addPatients = (req, res) => {
             .status(500)
             .json({ error: 'true', message: 'Pasien sudah terdaftar' });
       } else {
-         const addPatient = `INSERT INTO patients(namePatient, noPatient, kelamin, weightPatient) VALUES (?, ?, ?, ?)`;
+         const addPatient = `INSERT INTO patients(namePatient, noPatient, umur, kelamin, weightPatient) VALUES (?, ?, ?, ?, ?)`;
          connection.query(
             addPatient,
             [name, bpjs, umur, jkelamin, beratbadan],
-            (err, result) => {
+            (err, rows, result) => {
                if (err) {
                   return res.status(500).json({
+                     err,
                      error: 'true',
                      message: 'Terjadi kesalahan pada server',
                   });
@@ -37,7 +38,7 @@ const addPatients = (req, res) => {
                   res.status(200).json({
                      error: 'false',
                      message: 'Data pasien berhasil ditambahkan',
-                     result: { data: result },
+                     data: result,
                   });
                }
             }
@@ -47,15 +48,20 @@ const addPatients = (req, res) => {
 };
 
 let allPatients = (req, res) => {
-   const query = `select * from patients ORDER BY idPatient DESC`;
+   const query = `SELECT * FROM patients ORDER BY idPatient DESC`;
    connection.query(query, (err, rows, field) => {
       if (err) {
          return res.status(500).json({
+            err,
             error: 'true',
             message: 'Terjadi kesalahan pada server',
          });
       } else {
-         res.json(rows);
+         res.status(200).json({
+            error: 'false',
+            message: 'berhasil menampilkan data pasien',
+            data: rows,
+         });
       }
    });
 };

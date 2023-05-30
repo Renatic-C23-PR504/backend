@@ -74,27 +74,22 @@ const search = (req, res) => {
    }
 
    const ifPatientExist = `SELECT * FROM patients WHERE noPatient = ?`;
-   connection.query(ifPatientExist, [bpjs], (err, rows, result) => {
+   connection.query(ifPatientExist, [bpjs], (err, rows) => {
       if (err) {
          return res.status(500).json({
             error: 'true',
             message: 'Terjadi kesalahan pada server',
          });
-      } else if (result.length <= 0) {
+      } else if (rows.length == 0) {
          res.status(200).json({
             error: 'false',
             message: 'pasien belum terdaftar',
          });
-      } else if (result.length > 0) {
+      } else if (rows.length > 0) {
          res.status(200).json({
             error: 'false',
             message: 'pasien ditemukan',
             data: rows,
-         });
-      } else {
-         return res.status(500).json({
-            error: 'true',
-            message: 'Terjadi kesalahan pada server',
          });
       }
    });

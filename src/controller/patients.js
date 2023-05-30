@@ -85,11 +85,16 @@ const search = (req, res) => {
             error: 'false',
             message: 'pasien belum terdaftar',
          });
-      } else {
+      } else if (result.length > 0) {
          res.status(200).json({
             error: 'false',
             message: 'pasien ditemukan',
             data: rows,
+         });
+      } else {
+         return res.status(500).json({
+            error: 'true',
+            message: 'Terjadi kesalahan pada server',
          });
       }
    });

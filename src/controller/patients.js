@@ -57,4 +57,29 @@ let allPatients = (req, res) => {
    });
 };
 
-module.exports = { addPatients, allPatients };
+const search = (req, res) => {
+   var { bpjs } = req.body;
+   if (!bpjs) {
+      return res.status(400).json({ message: 'data tidak boleh kosong' });
+   }
+
+   const ifPatientExist = `SELECT * FROM patients WHERE noPatient = ?`;
+   connection.query(ifPatientExist, [bpjs], (err, rows, result) => {
+      if (err) {
+         res.status(500).send({ message: err.sqlMessage });
+      } else if (result.length <= 0) {
+         res.status(200).json({
+            error: 'false',
+            message: 'pasien belum terdaftar',
+         });
+      } else {
+         res.status(200).json({
+            error: 'false',
+            message: 'pasien ditemukan',
+            data: rows
+         });
+      }
+   })
+}
+
+module.exports = { addPatients, allPatients, search };

@@ -13,13 +13,11 @@ const auth = async (req, res, next) => {
    }
 
    const token = authHeader;
-   // console.log(token);
    try {
       const decode = jwt.verify(token, jwtkey);
       const { id, email } = decode;
       req.user = { id, email };
 
-      // console.log(decode);
       next();
    } catch (error) {
       return res

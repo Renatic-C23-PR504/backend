@@ -47,10 +47,13 @@ const addPatients = (req, res) => {
 };
 
 let allPatients = (req, res) => {
-   const query = `select * from patients`;
+   const query = `select * from patients ORDER BY idPatient DESC`;
    connection.query(query, (err, rows, field) => {
       if (err) {
-         res.status(200).send({ message: err.sqlMessage });
+         return res.status(500).json({
+            error: 'true',
+            message: 'Terjadi kesalahan pada server',
+         });
       } else {
          res.json(rows);
       }
@@ -58,15 +61,20 @@ let allPatients = (req, res) => {
 };
 
 const search = (req, res) => {
-   var { bpjs } = req.body;
+   let { bpjs } = req.body;
    if (!bpjs) {
-      return res.status(400).json({ message: 'data tidak boleh kosong' });
+      return res
+         .status(400)
+         .json({ error: 'true', message: 'data tidak boleh kosong' });
    }
 
    const ifPatientExist = `SELECT * FROM patients WHERE noPatient = ?`;
    connection.query(ifPatientExist, [bpjs], (err, rows, result) => {
       if (err) {
-         res.status(500).send({ message: err.sqlMessage });
+         return res.status(500).json({
+            error: 'true',
+            message: 'Terjadi kesalahan pada server',
+         });
       } else if (result.length <= 0) {
          res.status(200).json({
             error: 'false',
@@ -76,10 +84,10 @@ const search = (req, res) => {
          res.status(200).json({
             error: 'false',
             message: 'pasien ditemukan',
-            data: rows
+            data: rows,
          });
       }
-   })
-}
+   });
+};
 
 module.exports = { addPatients, allPatients, search };

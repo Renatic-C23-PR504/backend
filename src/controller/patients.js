@@ -27,7 +27,7 @@ const addPatients = (req, res) => {
          connection.query(
             addPatient,
             [name, bpjs, umur, jkelamin, beratbadan],
-            (err, rows, result) => {
+            (err, rows) => {
                if (err) {
                   return res.status(500).json({
                      err,
@@ -38,7 +38,6 @@ const addPatients = (req, res) => {
                   res.status(200).json({
                      error: 'false',
                      message: 'Data pasien berhasil ditambahkan',
-                     data: result,
                   });
                }
             }

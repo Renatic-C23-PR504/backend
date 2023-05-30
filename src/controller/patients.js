@@ -15,9 +15,13 @@ const addPatients = (req, res) => {
    const ifPatientExist = `SELECT * FROM patients WHERE noPatient = ?`;
    connection.query(ifPatientExist, [bpjs], (err, result) => {
       if (err) {
-         return res.status(500).json({ message: err.sqlMessage });
+         return res
+            .status(500)
+            .json({ error: 'true', message: 'Terjadi kesalahan pada server' });
       } else if (result.length > 0) {
-         return res.status(500).json({ message: 'pasien sudah ada' });
+         return res
+            .status(500)
+            .json({ error: 'true', message: 'Pasien sudah terdaftar' });
       } else {
          const addPatient = `INSERT INTO patients(namePatient, noPatient, kelamin, weightPatient) VALUES (?, ?, ?, ?)`;
          connection.query(
@@ -25,9 +29,16 @@ const addPatients = (req, res) => {
             [name, bpjs, umur, jkelamin, beratbadan],
             (err, result) => {
                if (err) {
-                  res.status(500).send({ message: err.sqlMessage });
+                  return res.status(500).json({
+                     error: 'true',
+                     message: 'Terjadi kesalahan pada server',
+                  });
                } else {
-                  res.json(result);
+                  res.status(200).json({
+                     error: 'false',
+                     message: 'Data pasien berhasil ditambahkan',
+                     result: { data: result },
+                  });
                }
             }
          );

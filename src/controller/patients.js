@@ -8,6 +8,20 @@ app.use(express.json());
 const addPatients = (req, res) => {
    var { name, bpjs, umur, jkelamin, beratbadan } = req.body;
 
+   // var { name, bpjs, birthDate, jkelamin, beratbadan } = req.body;
+   // const [tahun, bulan, tanggal] = birthDate.split('-');
+
+   // // Menghitung umur
+   // const today = new Date();
+   // const birthDate = new Date(tahun, bulan - 1, tanggal);
+   // const age = today.getFullYear() - birthDate.getFullYear();
+   // const monthDiff = today.getMonth() - birthDate.getMonth();
+
+   // // Memperbarui umur jika bulan hari ini kurang dari bulan tanggal lahir
+   // if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+   //    age--;
+   // }
+
    if (!name || !bpjs || !umur || !beratbadan) {
       return res.status(400).json({ message: 'data tidak boleh kosong' });
    }

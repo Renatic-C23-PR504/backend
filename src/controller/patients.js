@@ -109,4 +109,18 @@ const search = (req, res) => {
    });
 };
 
-module.exports = { addPatients, allPatients, search };
+const onePatient = (req, res) => {};
+
+const editPatients = (req, res) => {
+   const { idPatient, bpjs, nama, alamat, gender, tglLahir } = req.body;
+   if (!idPatient || !bpjs || !nama || !alamat || !gender || !tglLahir) {
+      return res.status(400).json({
+         error: 'true',
+         message: 'data tidak boleh ada yang kosong',
+      });
+   }
+
+   const editPatient = ``;
+};
+
+module.exports = { addPatients, allPatients, search, onePatient, editPatients };

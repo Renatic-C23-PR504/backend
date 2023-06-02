@@ -29,7 +29,7 @@ router.get('/profile/:id', auth, profileUser);
 router.post('/addpatient', auth, addPatients);
 router.get('/patient', auth, allPatients);
 router.post('/search', auth, search);
-router.post('/editpatient', auth, editPatients);
+router.post('/editpatient/:id', auth, editPatients);
 router.get('/onepatient/:id', auth, onePatient);
 
 module.exports = router;

@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express.Router();
 const connection = require('../database');
+// const { get } = require('../../routes/router');
 
 app.use(express.json());
 
@@ -134,15 +135,43 @@ const onePatient = (req, res) => {
 };
 
 const editPatients = (req, res) => {
-   const { idPatient, bpjs, nama, alamat, gender, tglLahir } = req.body;
-   if (!idPatient || !bpjs || !nama || !alamat || !gender || !tglLahir) {
-      return res.status(400).json({
-         error: 'true',
-         message: 'data tidak boleh ada yang kosong',
-      });
-   }
+   let id = req.params.id;
+   const { name, bpjs, umur, jkelamin, beratbadan } = req.body;
 
-   const editPatient = ``;
+   const getFirst = `SELECT * FROM patients WHERE idPatient = ?`;
+   connection.query(getFirst, [id], (err, rows) => {
+      if (err) {
+         return res.status(500).json({
+            error: 'true',
+            message: 'Terjadi kesalahan pada server',
+         });
+      }
+      if (!bpjs || !name || !umur || !jkelamin || !beratbadan) {
+         return res.status(400).json({
+            error: 'true',
+            message: 'data tidak boleh ada yang kosong',
+         });
+      }
+      const editPatient = `UPDATE patients SET namePatient = ?, noPatient = ?, umur = ?, kelamin = ?, weightPatient = ? WHERE idPatient = ?`;
+      connection.query(
+         editPatient,
+         [name, bpjs, umur, jkelamin, beratbadan, id],
+         (err, rows) => {
+            if (err) {
+               return res.status(500).json({
+                  error: 'true',
+                  message: 'Terjadi kesalahan pada server',
+               });
+            }
+            if (rows.affectedRows == 1) {
+               return res.status(404).json({
+                  error: 'false',
+                  message: 'data berhasil di update id:' + id,
+               });
+            }
+         }
+      );
+   });
 };
 
 module.exports = { addPatients, allPatients, search, onePatient, editPatients };

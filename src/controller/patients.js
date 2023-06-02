@@ -109,7 +109,29 @@ const search = (req, res) => {
    });
 };
 
-const onePatient = (req, res) => {};
+const onePatient = (req, res) => {
+   let id = req.params.id;
+   const getOnePatient = `SELECT * FROM patients WHERE idPatient = ?`;
+   connection.query(getOnePatient, [id], (err, rows) => {
+      if (err) {
+         return res.status(500).json({
+            error: 'true',
+            message: 'Terjadi kesalahan pada server',
+         });
+      }
+      if (rows.length == 0) {
+         return res.status(404).json({
+            error: 'true',
+            message: 'data tidak ditemukan',
+         });
+      }
+      res.status(200).json({
+         error: 'false',
+         message: 'data ditemukan',
+         data: rows,
+      });
+   });
+};
 
 const editPatients = (req, res) => {
    const { idPatient, bpjs, nama, alamat, gender, tglLahir } = req.body;

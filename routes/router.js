@@ -14,6 +14,7 @@ const {
    allPatients,
    search,
    editPatients,
+   onePatient,
 } = require('../src/controller/patients');
 
 //testing
@@ -29,5 +30,6 @@ router.post('/addpatient', auth, addPatients);
 router.get('/patient', auth, allPatients);
 router.post('/search', auth, search);
 router.post('/editpatient', auth, editPatients);
+router.get('/onepatient/:id', auth, onePatient);
 
 module.exports = router;

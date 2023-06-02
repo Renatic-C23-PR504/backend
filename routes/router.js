@@ -32,4 +32,6 @@ router.post('/search', auth, search);
 router.post('/editpatient/:id', auth, editPatients);
 router.get('/onepatient/:id', auth, onePatient);
 
+//klinis
+
 module.exports = router;

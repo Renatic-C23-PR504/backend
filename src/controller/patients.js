@@ -24,7 +24,7 @@ const addPatients = (req, res) => {
    // }
 
    if (!name || !bpjs || !umur || !beratbadan) {
-      return res.status(400).json({ message: 'data tidak boleh kosong' });
+      return res.status(417).json({ message: 'data tidak boleh kosong' });
    }
 
    const ifPatientExist = `SELECT * FROM patients WHERE noPatient = ?`;
@@ -35,7 +35,7 @@ const addPatients = (req, res) => {
             .json({ error: 'true', message: 'Terjadi kesalahan pada server' });
       } else if (result.length > 0) {
          return res
-            .status(500)
+            .status(400)
             .json({ error: 'true', message: 'Pasien sudah terdaftar' });
       } else {
          const addPatient = `INSERT INTO patients(namePatient, noPatient, umur, kelamin, weightPatient) VALUES (?, ?, ?, ?, ?)`;
@@ -50,7 +50,7 @@ const addPatients = (req, res) => {
                      message: 'Terjadi kesalahan pada server',
                   });
                } else {
-                  res.status(200).json({
+                  res.status(201).json({
                      error: 'false',
                      message: 'Data pasien berhasil ditambahkan',
                   });
@@ -84,7 +84,7 @@ const search = (req, res) => {
    let { bpjs } = req.body;
    if (!bpjs) {
       return res
-         .status(400)
+         .status(417)
          .json({ error: 'true', message: 'data tidak boleh kosong' });
    }
 
@@ -96,7 +96,7 @@ const search = (req, res) => {
             message: 'Terjadi kesalahan pada server',
          });
       } else if (rows.length == 0) {
-         res.status(200).json({
+         res.status(404).json({
             error: 'false',
             message: 'pasien belum terdaftar',
          });
@@ -147,7 +147,7 @@ const editPatients = (req, res) => {
          });
       }
       if (!bpjs || !name || !umur || !jkelamin || !beratbadan) {
-         return res.status(400).json({
+         return res.status(417).json({
             error: 'true',
             message: 'data tidak boleh ada yang kosong',
          });
@@ -164,7 +164,7 @@ const editPatients = (req, res) => {
                });
             }
             if (rows.affectedRows == 1) {
-               return res.status(404).json({
+               return res.status(202).json({
                   error: 'false',
                   message: 'data berhasil di update id:' + id,
                });

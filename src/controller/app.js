@@ -28,7 +28,7 @@ const registerUser = (req, res) => {
    var { name, email, password1, password2 } = req.body;
 
    if (!name || !email || !password1 || !password2) {
-      return res.status(400).json({
+      return res.status(417).json({
          error: 'true',
          message: 'Data ada yang kosong',
       });
@@ -42,7 +42,7 @@ const registerUser = (req, res) => {
             .json({ error: 'true', message: 'Terjadi kesalahan pada server' });
       } else if (result.length > 0) {
          return res
-            .status(500)
+            .status(409)
             .json({ error: 'true', message: 'Akun sudah ada' });
       }
       if (password1 === password2) {
@@ -84,7 +84,7 @@ const registerUser = (req, res) => {
             });
          });
       } else {
-         res.status(500).json({
+         res.status(409).json({
             error: 'true',
             message: 'Password tidak sama',
          });
@@ -129,20 +129,20 @@ const loginUser = async (req, res) => {
                      token: token,
                   };
 
-                  res.status(201).json({
+                  res.status(202).json({
                      error: 'false',
                      message: 'Berhasil login',
                      data: userToken,
                   });
                } else {
-                  res.status(401).json({
+                  res.status(409).json({
                      error: 'true',
                      message: 'Password tidak cocok',
                   });
                }
             });
          } else {
-            res.status(401).json({
+            res.status(404).json({
                error: 'true',
                message: 'Pengguna tidak ditemukan',
             });
@@ -162,7 +162,7 @@ const profileUser = (req, res) => {
    const profileUserId = `SELECT * FROM users WHERE idUser = ?`;
    connection.query(profileUserId, [id], (err, rows, result) => {
       if (err) {
-         res.status(500).send({
+         res.status(401).send({
             error: 'true',
             message: 'Login terlebih dahulu',
          });

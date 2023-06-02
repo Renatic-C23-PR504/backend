@@ -6,7 +6,7 @@ const auth = async (req, res, next) => {
    const authHeader = req.headers.authorization;
 
    if (!authHeader) {
-      return res.status(400).json({
+      return res.status(401).json({
          error: 'true',
          message: 'anda tidak punya izin',
       });
@@ -20,7 +20,7 @@ const auth = async (req, res, next) => {
 
       next();
    } catch (error) {
-      return res.status(401).json({ error: 'true', message: 'token salah' });
+      return res.status(401).json({ error: 'true', message: 'anda tidak memiliki akses' });
    }
 };
 

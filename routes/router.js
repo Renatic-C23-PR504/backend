@@ -14,7 +14,7 @@ const {
    allPatients,
    search,
    editPatients,
-   onePatient,
+   showDataPatient,
 } = require('../src/controller/patients');
 
 //testing
@@ -30,7 +30,7 @@ router.post('/addpatient', auth, addPatients);
 router.get('/patient', auth, allPatients);
 router.post('/search', auth, search);
 router.post('/editpatient/:id', auth, editPatients);
-router.get('/onepatient/:id', auth, onePatient);
+router.get('/onepatient/:id', auth, showDataPatient);
 
 //klinis
 

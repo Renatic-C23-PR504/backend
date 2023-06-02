@@ -110,10 +110,10 @@ const search = (req, res) => {
    });
 };
 
-const onePatient = (req, res) => {
+const showDataPatient = (req, res) => {
    let id = req.params.id;
-   const getOnePatient = `SELECT * FROM patients WHERE idPatient = ?`;
-   connection.query(getOnePatient, [id], (err, rows) => {
+   const getshowDataPatient = `SELECT * FROM patients WHERE idPatient = ?`;
+   connection.query(getshowDataPatient, [id], (err, rows) => {
       if (err) {
          return res.status(500).json({
             error: 'true',
@@ -174,4 +174,4 @@ const editPatients = (req, res) => {
    });
 };
 
-module.exports = { addPatients, allPatients, search, onePatient, editPatients };
+module.exports = { addPatients, allPatients, search, showDataPatient, editPatients };

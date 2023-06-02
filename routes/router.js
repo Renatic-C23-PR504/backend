@@ -30,7 +30,7 @@ router.post('/addpatient', auth, addPatients);
 router.get('/patient', auth, allPatients);
 router.post('/search', auth, search);
 router.post('/editpatient/:id', auth, editPatients);
-router.get('/onepatient/:id', auth, showDataPatient);
+router.get('/showdatapatient/:id', auth, showDataPatient);
 
 //klinis
 

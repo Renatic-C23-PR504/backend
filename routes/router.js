@@ -16,6 +16,11 @@ const {
    editPatients,
    showDataPatient,
 } = require('../src/controller/patients');
+const {
+   allKlinis,
+   addKlinis,
+   getDataKlinis,
+} = require('../src/controller/klinis');
 
 //testing
 router.get('/all', all);
@@ -33,5 +38,7 @@ router.post('/editpatient/:id', auth, editPatients);
 router.get('/showdatapatient/:id', auth, showDataPatient);
 
 //klinis
-
+router.get('/allKlinis', allKlinis);
+router.post('/addklinis', addKlinis);
+router.get('/getDataKlinis/:id', getDataKlinis);
 module.exports = router;

@@ -2,7 +2,6 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express.Router();
 const connection = require('../database');
-// const { get } = require('../../routes/router');
 
 app.use(express.json());
 
@@ -174,4 +173,10 @@ const editPatients = (req, res) => {
    });
 };
 
-module.exports = { addPatients, allPatients, search, showDataPatient, editPatients };
+module.exports = {
+   addPatients,
+   allPatients,
+   search,
+   showDataPatient,
+   editPatients,
+};

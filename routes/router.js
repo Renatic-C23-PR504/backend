@@ -20,6 +20,7 @@ const {
    allKlinis,
    addKlinis,
    getDataKlinis,
+   getKlinisPatient,
 } = require('../src/controller/klinis');
 
 //testing
@@ -41,4 +42,5 @@ router.get('/showdatapatient/:id', auth, showDataPatient);
 router.get('/allKlinis', allKlinis);
 router.post('/addklinis', addKlinis);
 router.get('/getDataKlinis/:id', getDataKlinis);
+router.get('/getKlinisPatient', getKlinisPatient);
 module.exports = router;

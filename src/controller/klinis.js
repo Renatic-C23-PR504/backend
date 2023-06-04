@@ -84,4 +84,25 @@ const getDataKlinis = (req, res) => {
    });
 };
 
-module.exports = { allKlinis, addKlinis, getDataKlinis };
+const getKlinisPatient = (req, res) => {
+   let id = req.headers.id;
+
+   const allKlinisPatient = `SELECT * FROM klinis WHERE patient = ?`;
+   connection.query(allKlinisPatient, [id], (err, rows) => {
+      if (err) {
+         res.status(500).send({
+            error: 'true',
+            message: 'Terjadi kesalahan pada server',
+            err,
+         });
+      } else {
+         res.status(200).json({
+            error: 'false',
+            message: 'data berhasil diambil',
+            data: rows,
+         });
+      }
+   });
+};
+
+module.exports = { allKlinis, addKlinis, getDataKlinis, getKlinisPatient };

@@ -41,6 +41,6 @@ router.get('/showdatapatient/:id', auth, showDataPatient);
 //klinis
 router.get('/allKlinis', allKlinis);
 router.post('/addklinis', addKlinis);
-router.get('/getDataKlinis/:id', getDataKlinis);
-router.get('/getKlinisPatient', getKlinisPatient);
+router.get('/dataklinis/:id', getDataKlinis);
+router.get('/klinispatient/:id', getKlinisPatient);
 module.exports = router;

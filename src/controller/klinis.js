@@ -85,7 +85,7 @@ const getDataKlinis = (req, res) => {
 };
 
 const getKlinisPatient = (req, res) => {
-   let id = req.headers.id;
+   let id = req.params.id;
 
    const allKlinisPatient = `SELECT * FROM klinis WHERE patient = ?`;
    connection.query(allKlinisPatient, [id], (err, rows) => {

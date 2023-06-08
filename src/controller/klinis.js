@@ -26,7 +26,7 @@ const allKlinis = (req, res) => {
 
 const addKlinis = (req, res) => {
    let id = req.headers.id;
-   const { pregnancies, glucose, blood, skin, insulin, bmi, diabetes, umur } =
+   const { pregnancies, glucose, blood, skin, insulin, bmi, diabetes } =
       req.body;
    if (
       !pregnancies ||
@@ -43,10 +43,10 @@ const addKlinis = (req, res) => {
          message: 'data tidak boleh ada yang kosong',
       });
    }
-   addDataKlinis = `INSERT INTO klinis(patient, pregnancies, glucose, blood, skin, insulin, bmi, diabetesDegree, umur) VALUES (?,?,?,?,?,?,?,?,?)`;
+   addDataKlinis = `INSERT INTO klinis(patient, pregnancies, glucose, blood, skin, insulin, bmi, diabetesDegree) VALUES (?,?,?,?,?,?,?,?)`;
    connection.query(
       addDataKlinis,
-      [id, pregnancies, glucose, blood, skin, insulin, bmi, diabetes, umur],
+      [id, pregnancies, glucose, blood, skin, insulin, bmi, diabetes],
       (err, rows) => {
          if (err) {
             res.status(500).send({

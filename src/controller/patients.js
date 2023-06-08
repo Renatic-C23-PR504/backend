@@ -6,23 +6,23 @@ const connection = require('../database');
 app.use(express.json());
 
 const addPatients = (req, res) => {
-   var { name, bpjs, umur, jkelamin, beratbadan } = req.body;
+   var { name, bpjs, tanggalLahir, jkelamin, beratbadan } = req.body;
 
    // var { name, bpjs, birthDate, jkelamin, beratbadan } = req.body;
    // const [tahun, bulan, tanggal] = birthDate.split('-');
 
-   // // Menghitung umur
+   // // Menghitung tanggalLahir
    // const today = new Date();
    // const birthDate = new Date(tahun, bulan - 1, tanggal);
    // const age = today.getFullYear() - birthDate.getFullYear();
    // const monthDiff = today.getMonth() - birthDate.getMonth();
 
-   // // Memperbarui umur jika bulan hari ini kurang dari bulan tanggal lahir
+   // // Memperbarui tanggalLahir jika bulan hari ini kurang dari bulan tanggal lahir
    // if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
    //    age--;
    // }
 
-   if (!name || !bpjs || !umur || !beratbadan) {
+   if (!name || !bpjs || !tanggalLahir || !beratbadan) {
       return res.status(417).json({ message: 'data tidak boleh kosong' });
    }
 
@@ -37,10 +37,10 @@ const addPatients = (req, res) => {
             .status(400)
             .json({ error: 'true', message: 'Pasien sudah terdaftar' });
       } else {
-         const addPatient = `INSERT INTO patients(namePatient, noPatient, umur, kelamin, weightPatient) VALUES (?, ?, ?, ?, ?)`;
+         const addPatient = `INSERT INTO patients(namePatient, noPatient, tanggalLahir, kelamin, weightPatient) VALUES (?, ?, ?, ?, ?)`;
          connection.query(
             addPatient,
-            [name, bpjs, umur, jkelamin, beratbadan],
+            [name, bpjs, tanggalLahir, jkelamin, beratbadan],
             (err, rows) => {
                if (err) {
                   return res.status(500).json({
@@ -135,7 +135,7 @@ const showDataPatient = (req, res) => {
 
 const editPatients = (req, res) => {
    let id = req.params.id;
-   const { name, bpjs, umur, jkelamin, beratbadan } = req.body;
+   const { name, bpjs, tanggalLahir, jkelamin, beratbadan } = req.body;
 
    const getFirst = `SELECT * FROM patients WHERE idPatient = ?`;
    connection.query(getFirst, [id], (err, rows) => {
@@ -145,16 +145,16 @@ const editPatients = (req, res) => {
             message: 'Terjadi kesalahan pada server',
          });
       }
-      if (!bpjs || !name || !umur || !jkelamin || !beratbadan) {
+      if (!bpjs || !name || !tanggalLahir || !jkelamin || !beratbadan) {
          return res.status(417).json({
             error: 'true',
             message: 'data tidak boleh ada yang kosong',
          });
       }
-      const editPatient = `UPDATE patients SET namePatient = ?, noPatient = ?, umur = ?, kelamin = ?, weightPatient = ? WHERE idPatient = ?`;
+      const editPatient = `UPDATE patients SET namePatient = ?, noPatient = ?, tanggalLahir = ?, kelamin = ?, weightPatient = ? WHERE idPatient = ?`;
       connection.query(
          editPatient,
-         [name, bpjs, umur, jkelamin, beratbadan, id],
+         [name, bpjs, tanggalLahir, jkelamin, beratbadan, id],
          (err, rows) => {
             if (err) {
                return res.status(500).json({

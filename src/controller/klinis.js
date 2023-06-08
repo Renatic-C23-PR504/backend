@@ -7,7 +7,7 @@ app.use(express.json());
 
 const allKlinis = (req, res) => {
    const sql =
-      'SELECT k.*, p.umur FROM klinis k JOIN patients p ON k.patient = p.idPatient';
+      'SELECT k.*, p.tanggalLahir FROM klinis k JOIN patients p ON k.patient = p.idPatient';
    connection.query(sql, (err, result) => {
       if (err) {
          res.status(500).send({
@@ -67,7 +67,7 @@ const addKlinis = (req, res) => {
 const getDataKlinis = (req, res) => {
    let id = req.params.id;
 
-   const allDataKlinis = `SELECT k.*, p.umur FROM klinis k JOIN patients p ON k.patient = p.idPatient WHERE idKlinis = ?`;
+   const allDataKlinis = `SELECT k.*, p.tanggalLahir FROM klinis k JOIN patients p ON k.patient = p.idPatient WHERE idKlinis = ?`;
    connection.query(allDataKlinis, [id], (err, rows) => {
       if (err) {
          res.status(500).send({

@@ -6,7 +6,8 @@ const connection = require('../database');
 app.use(express.json());
 
 const allKlinis = (req, res) => {
-   const sql = 'SELECT * FROM klinis ORDER BY idKlinis DESC';
+   const sql =
+      'SELECT k.*, p.umur FROM klinis k JOIN patients p ON k.patient = p.idPatient';
    connection.query(sql, (err, result) => {
       if (err) {
          res.status(500).send({
@@ -35,8 +36,7 @@ const addKlinis = (req, res) => {
       !skin ||
       !insulin ||
       !bmi ||
-      !diabetes ||
-      !umur
+      !diabetes
    ) {
       return res.status(417).json({
          error: 'true',
@@ -67,7 +67,7 @@ const addKlinis = (req, res) => {
 const getDataKlinis = (req, res) => {
    let id = req.params.id;
 
-   const allDataKlinis = `SELECT * FROM klinis WHERE idKlinis = ?`;
+   const allDataKlinis = `SELECT k.*, p.umur FROM klinis k JOIN patients p ON k.patient = p.idPatient WHERE idKlinis = ?`;
    connection.query(allDataKlinis, [id], (err, rows) => {
       if (err) {
          res.status(500).send({

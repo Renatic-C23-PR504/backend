@@ -25,6 +25,8 @@ const {
 // const { uploadIMG } = require('../imageUpload');
 const {
    uploadImage,
+   showImagesId,
+   showMataImg,
 } = require('../src/controller/imageUpload');
 
 //testing
@@ -49,6 +51,8 @@ router.get('/dataklinis/:id', getDataKlinis);
 router.get('/klinispatient/:id', getKlinisPatient);
 
 // router.post('/uploadimg', uploadIMG);
-router.post('/upload/:id', uploadImage);
+router.post('/upload', uploadImage);
+router.get('/historymata/:id', showImagesId);
+router.get('/mata/:id', showMataImg);
 
 module.exports = router;

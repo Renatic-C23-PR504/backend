@@ -13,6 +13,7 @@ app.use('/', router);
 app.listen(port, () => {
    console.log(`http://localhost:${port}/`);
 });
+<<<<<<< HEAD
 
 const Multer = require('multer');
 const { Storage } = require('@google-cloud/storage');
@@ -59,3 +60,5 @@ app.post('/upload', upload.single('image'), (req, res, next) => {
 
    stream.end(req.file.buffer);
 });
+=======
+>>>>>>> parent of a51a868 (service upload image to bucket)

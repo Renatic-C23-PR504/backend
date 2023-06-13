@@ -16,7 +16,7 @@ app.listen(port, () => {
 
 const Multer = require('multer');
 const { Storage } = require('@google-cloud/storage');
-
+const connection = require('./src/database');
 const upload = Multer({
    storage: Multer.memoryStorage(),
    limits: {
@@ -54,9 +54,13 @@ app.post('/upload', upload.single('image'), (req, res, next) => {
 
    stream.on('finish', () => {
       const publicUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
-      res.status(200).json({
-         message: 'File uploaded successfully',
-         publicUrl,
+      const upsql = `INSERT INTO mata (gambar) VALUES (?)`;
+      connection.query(upsql, [publicUrl], (err, result) => {
+         res.status(200).json({
+            message: 'File uploaded successfully',
+            publicUrl,
+            result,
+         });
       });
    });
 

@@ -22,7 +22,7 @@ const {
    getDataKlinis,
    getKlinisPatient,
 } = require('../src/controller/klinis');
-
+// const { uploadIMG } = require('../imageUpload');
 //testing
 router.get('/all', all);
 
@@ -43,4 +43,6 @@ router.get('/allKlinis', allKlinis);
 router.post('/addklinis', addKlinis);
 router.get('/dataklinis/:id', getDataKlinis);
 router.get('/klinispatient/:id', getKlinisPatient);
+
+// router.post('/uploadimg', uploadIMG);
 module.exports = router;

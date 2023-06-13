@@ -2,6 +2,7 @@ const Multer = require('multer');
 const { Storage } = require('@google-cloud/storage');
 const connection = require('../database');
 const multer = require('multer');
+const moment = require('moment');
 const multerUpload = Multer({
     storage: Multer.memoryStorage(),
     limits: {
@@ -18,6 +19,7 @@ const bucketName = 'renatic-image';
 const bucket = storage.bucket(bucketName);
 
 const uploadImage = (req, res) => {
+
     multerUpload.single('image')(req, res, (err) => {
         if (err instanceof multer.MulterError) {
             return res
@@ -54,9 +56,12 @@ const uploadImage = (req, res) => {
         });
 
         stream.on('finish', () => {
+            let id = req.params.id;
+            const currentDate = moment().format('YYYY-MM-DD');
+
             const publicUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
-            const upsql = `INSERT INTO mata (gambar) VALUES (?)`;
-            connection.query(upsql, [publicUrl], (err, result) => {
+            const upsql = `INSERT INTO mata (gambar, patient, date_add) VALUES (?,?,?)`;
+            connection.query(upsql, [publicUrl, id, currentDate], (err, result) => {
                 res.status(200).send({
                     error: 'false',
                     message: 'Gambar berhasil di upload',

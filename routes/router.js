@@ -49,6 +49,6 @@ router.get('/dataklinis/:id', getDataKlinis);
 router.get('/klinispatient/:id', getKlinisPatient);
 
 // router.post('/uploadimg', uploadIMG);
-router.post('/upload', uploadImage);
+router.post('/upload/:id', uploadImage);
 
 module.exports = router;

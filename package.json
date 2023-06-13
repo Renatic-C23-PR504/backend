@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Renatic-C23-PR504/backend#readme",
   "dependencies": {
+    "@google-cloud/storage": "^6.11.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "dotenv": "^16.0.3",

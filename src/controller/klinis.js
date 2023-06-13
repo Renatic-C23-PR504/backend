@@ -29,14 +29,33 @@ const addKlinis = (req, res) => {
    let id = req.headers.id;
    const { pregnancies, glucose, blood, skin, insulin, bmi, diabetes } =
       req.body;
+
    if (!id) {
       return res.status(417).json({
          error: 'true',
          message: 'pasien tidak ditemukan',
       });
    }
-   if (!req.body.key) {
-      return res.status(400).json({ error: 'input tidak sesuai' });
+
+   const allowedKeys = [
+      'pregnancies',
+      'glucose',
+      'blood',
+      'skin',
+      'insulin',
+      'bmi',
+      'diabetes',
+   ];
+   const receivedKeys = Object.keys(req.body);
+
+   // Check if any received key is not allowed
+   const invalidKeys = receivedKeys.filter((key) => !allowedKeys.includes(key));
+
+   if (invalidKeys.length > 0) {
+      return res.status(400).json({
+         error: 'true',
+         message: `key tidak sesuai: ${invalidKeys.join(', ')}`,
+      });
    }
    if (
       !pregnancies ||

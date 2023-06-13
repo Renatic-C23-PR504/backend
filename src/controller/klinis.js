@@ -29,6 +29,15 @@ const addKlinis = (req, res) => {
    let id = req.headers.id;
    const { pregnancies, glucose, blood, skin, insulin, bmi, diabetes } =
       req.body;
+   if (!id) {
+      return res.status(417).json({
+         error: 'true',
+         message: 'pasien tidak ditemukan',
+      });
+   }
+   if (!req.body.key) {
+      return res.status(400).json({ error: 'input tidak sesuai' });
+   }
    if (
       !pregnancies ||
       !glucose ||

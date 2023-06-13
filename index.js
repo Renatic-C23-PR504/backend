@@ -26,11 +26,11 @@ const upload = Multer({
 });
 
 const storage = new Storage({
-   projectId: 'capstone-renatic',
-   keyFilename: 'credentials.json',
+   projectId: 'capstone-renatic', // Ganti dengan ID proyek Google Cloud Storage Anda
+   keyFilename: 'credentials.json', // Ganti dengan path ke service account key Anda
 });
 
-const bucketName = 'renatic-image';
+const bucketName = 'renatic-image'; // Ganti dengan nama bucket yang digunakan
 const bucket = storage.bucket(bucketName);
 
 app.post('/upload', upload.single('image'), (req, res, next) => {

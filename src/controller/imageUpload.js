@@ -7,7 +7,7 @@
 
 // const storage = new Storage({
 //     projectId: 'capstone-renatic',
-//     keyFilename: 'credentials.json', // Ganti dengan path yang sesuai ke service account key Anda
+//     keyFilename: 'credentials.json', 
 // });
 
 // const bucketName = 'renatic-image';

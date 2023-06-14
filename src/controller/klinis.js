@@ -71,6 +71,7 @@ const addKlinis = (req, res) => {
          message: 'data tidak boleh ada yang kosong',
       });
    }
+
    addDataKlinis = `INSERT INTO klinis(patient, pregnancies, glucose, blood, skin, insulin, bmi, diabetesDegree) VALUES (?,?,?,?,?,?,?,?)`;
    connection.query(
       addDataKlinis,

@@ -29,9 +29,10 @@ const {
    showMataImg,
 } = require('../src/controller/imageUpload');
 
+const { tesklinis } = require('../src/controller/mlnyoba');
 //testing
 router.get('/all', all);
-
+router.post('/tesklinis', tesklinis);
 //user
 router.post('/register', registerUser);
 router.post('/login', loginUser);

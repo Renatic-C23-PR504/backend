@@ -60,17 +60,13 @@ const uploadImage = (req, res) => {
          console.log(id);
          const publicUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
          const upsql = `INSERT INTO mata (gambar, patient, date_add) VALUES (?,?,?)`;
-         connection.query(
-            upsql,
-            [publicUrl, id, currentDate],
-            (err, result) => {
-               res.status(200).send({
-                  error: 'false',
-                  message: 'Gambar berhasil di upload',
-                  publicUrl: publicUrl,
-               });
-            }
-         );
+         connection.query(upsql, [publicUrl, id, currentDate], (err, rows) => {
+            res.status(200).send({
+               error: 'false',
+               message: 'Gambar berhasil di upload',
+               publicUrl: publicUrl,
+            });
+         });
       });
       stream.end(req.file.buffer);
    });

@@ -128,6 +128,35 @@ const addKlinis = (req, res) => {
 
             //    // Send the new API response
             //    res.json(transformedData);
+            addDataKlinis = `INSERT INTO klinis(patient, pregnancies, glucose, blood, skin, insulin, bmi, diabetesDegree) VALUES (?,?,?,?,?,?,?,?)`;
+            connection.query(
+               addDataKlinis,
+               [
+                  id,
+                  Pregnancies,
+                  Glucose,
+                  BloodPressure,
+                  SkinThickness,
+                  Insulin,
+                  BMI,
+                  DiabetesPedigreeFunction,
+               ],
+               (err, rows) => {
+                  if (err) {
+                     res.status(500).send({
+                        error: 'true',
+                        message: 'Terjadi kesalahan pada server',
+                     });
+                  } else {
+                     res.status(201).json({
+                        error: 'false',
+                        message: 'data berhasil ditambahkan',
+                        result,
+                        // data: result, gatau ada result ato ga kalo post
+                     });
+                  }
+               }
+            );
          })
          .catch((error) => {
             // Handle errors
@@ -137,35 +166,6 @@ const addKlinis = (req, res) => {
             });
          });
    });
-
-   addDataKlinis = `INSERT INTO klinis(patient, pregnancies, glucose, blood, skin, insulin, bmi, diabetesDegree) VALUES (?,?,?,?,?,?,?,?)`;
-   connection.query(
-      addDataKlinis,
-      [
-         id,
-         Pregnancies,
-         Glucose,
-         BloodPressure,
-         SkinThickness,
-         Insulin,
-         BMI,
-         DiabetesPedigreeFunction,
-      ],
-      (err, rows) => {
-         if (err) {
-            res.status(500).send({
-               error: 'true',
-               message: 'Terjadi kesalahan pada server',
-            });
-         } else {
-            res.status(201).json({
-               error: 'false',
-               message: 'data berhasil ditambahkan',
-               // data: result, gatau ada result ato ga kalo post
-            });
-         }
-      }
-   );
 };
 
 const getDataKlinis = (req, res) => {

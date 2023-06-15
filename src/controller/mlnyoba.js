@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const app = express.Router();
 const connection = require('../database');
 const axios = require('axios');
-
+//SELECT k.*, p.tanggalLahir FROM klinis k JOIN patients p ON k.patient = p.idPatient WHERE idPatient = ?`;
 const tesklinis = (req, res) => {
    let id = req.headers.id;
    const {
@@ -102,6 +102,35 @@ const tesklinis = (req, res) => {
 
             //    // Send the new API response
             //    res.json(transformedData);
+            addDataKlinis = `INSERT INTO klinis(patient, pregnancies, glucose, blood, skin, insulin, bmi, diabetesDegree) VALUES (?,?,?,?,?,?,?,?)`;
+            connection.query(
+               addDataKlinis,
+               [
+                  id,
+                  Pregnancies,
+                  Glucose,
+                  BloodPressure,
+                  SkinThickness,
+                  Insulin,
+                  BMI,
+                  DiabetesPedigreeFunction,
+               ],
+               (err, rows) => {
+                  if (err) {
+                     res.status(500).send({
+                        error: 'true',
+                        message: 'Terjadi kesalahan pada server',
+                     });
+                  } else {
+                     res.status(201).json({
+                        error: 'false',
+                        message: 'data berhasil ditambahkan',
+                        result,
+                        // data: result, gatau ada result ato ga kalo post
+                     });
+                  }
+               }
+            );
          })
          .catch((error) => {
             // Handle errors
@@ -109,35 +138,6 @@ const tesklinis = (req, res) => {
             res.status(500).send('Error calling the other API');
          });
    });
-
-   addDataKlinis = `INSERT INTO klinis(patient, pregnancies, glucose, blood, skin, insulin, bmi, diabetesDegree) VALUES (?,?,?,?,?,?,?,?)`;
-   connection.query(
-      addDataKlinis,
-      [
-         id,
-         Pregnancies,
-         Glucose,
-         BloodPressure,
-         SkinThickness,
-         Insulin,
-         BMI,
-         DiabetesPedigreeFunction,
-      ],
-      (err, rows) => {
-         if (err) {
-            res.status(500).send({
-               error: 'true',
-               message: 'Terjadi kesalahan pada server',
-            });
-         } else {
-            res.status(201).json({
-               error: 'false',
-               message: 'data berhasil ditambahkan',
-               // data: result, gatau ada result ato ga kalo post
-            });
-         }
-      }
-   );
 };
 
 module.exports = { tesklinis };

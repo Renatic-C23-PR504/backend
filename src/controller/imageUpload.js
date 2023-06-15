@@ -3,6 +3,8 @@ const { Storage } = require('@google-cloud/storage');
 const connection = require('../database');
 const multer = require('multer');
 const moment = require('moment');
+const { response } = require('express');
+const axios = require('axios');
 const multerUpload = Multer({
    storage: Multer.memoryStorage(),
    limits: {
@@ -59,14 +61,29 @@ const uploadImage = (req, res) => {
          const currentDate = moment().format('YYYY-MM-DD');
          console.log(id);
          const publicUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
-         const upsql = `INSERT INTO mata (gambar, patient, date_add) VALUES (?,?,?)`;
-         connection.query(upsql, [publicUrl, id, currentDate], (err, rows) => {
-            res.status(200).send({
-               error: 'false',
-               message: 'Gambar berhasil di upload',
-               publicUrl: publicUrl,
+         axios
+            .post('https://imgrenatic-nhldbkcx5q-et.a.run.app/predict', {
+               publicUrl,
+            })
+            .then((response) => {
+               const upsql = `INSERT INTO mata (gambar, patient, date_add) VALUES (?,?,?)`;
+               connection.query(
+                  upsql,
+                  [publicUrl, id, currentDate],
+                  (err, rows) => {
+                     res.status(200).send({
+                        error: 'false',
+                        message: 'Gambar berhasil di upload',
+                        publicUrl: publicUrl,
+                     });
+                  }
+               );
+               console.log('Image uploaded successfully:', response.data);
+            })
+            .catch((error) => {
+               console.error('Error uploading image:', error);
+               res.status(500).send('Error uploading image');
             });
-         });
       });
       stream.end(req.file.buffer);
    });

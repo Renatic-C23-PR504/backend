@@ -191,7 +191,7 @@ const getDataKlinis = (req, res) => {
 const getKlinisPatient = (req, res) => {
    let id = req.params.id;
 
-   const allKlinisPatient = `SELECT * FROM klinis WHERE patient = ?`;
+   const allKlinisPatient = `SELECT * FROM klinis WHERE patient = ? ORDER BY idKlinis DESC`;
    connection.query(allKlinisPatient, [id], (err, rows) => {
       if (err) {
          res.status(500).send({
@@ -210,3 +210,16 @@ const getKlinisPatient = (req, res) => {
 };
 
 module.exports = { allKlinis, addKlinis, getDataKlinis, getKlinisPatient };
+
+// const getAge = `SELECT k.*, p.tanggalLahir FROM klinis k JOIN patients p ON k.patient = p.idPatient WHERE idPatient = ?`;
+
+// const birthDate = new Date(rows[0].tanggalLahir);
+
+// // Calculate the age based on the current date
+// const currentDate = new Date();
+// const ageInMilliseconds = currentDate - birthDate;
+// const ageInYears = Math.floor(
+//    ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25)
+// );
+
+// console.log('Age:', ageInYears);

@@ -20,11 +20,9 @@ const storage = new Storage({
 const bucketName = 'renatic-image';
 const bucket = storage.bucket(bucketName);
 
-const uploadImage = (req, res, next) => {
+let ImgUpload = {};
+ImgUpload.upiImg = (req, res, next) => {
    multerUpload.single('image')(req, res, (err) => {
-      // console.log(req.body);
-      // console.log(req.body.Pregnancies);
-      // console.log(req.file);
       if (err instanceof multer.MulterError) {
          return res
             .status(400)
@@ -52,64 +50,25 @@ const uploadImage = (req, res, next) => {
       });
 
       stream.on('error', (err) => {
-         req.file.cloudStorageError = err;
-         next(err);
+         console.error(err);
+         res.status(500).send({
+            error: 'true',
+            message: 'Gagal meng-upload gambar',
+         });
       });
 
       stream.on('finish', () => {
+         let id = req.headers.id;
          const currentDate = moment().format('YYYY-MM-DD');
+         console.log(id);
          const publicUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
-
          req.image = { publicUrl };
-         // console.log(req.image);
-         req.data = req.body;
-
          next();
       });
       stream.end(req.file.buffer);
    });
 };
 
-const showImagesId = (req, res) => {
-   let id = req.params.id;
-   const showimg = `SELECT * FROM mata WHERE patient = ? ORDER BY  idMata DESC`;
-   connection.query(showimg, [id], (err, rows) => {
-      if (err) {
-         res.status(500).send({
-            error: 'true',
-            message: 'Terjadi kesalahan pada server',
-         });
-      } else {
-         res.status(200).json({
-            error: 'false',
-            message: 'data berhasil diambil',
-            data: rows,
-         });
-      }
-   });
-};
-
-const showMataImg = (req, res) => {
-   let id = req.params.id;
-   const showimg = `SELECT * FROM mata WHERE idMata = ?`;
-   connection.query(showimg, [id], (err, rows) => {
-      if (err) {
-         res.status(500).send({
-            error: 'true',
-            message: 'Terjadi kesalahan pada server',
-         });
-      } else {
-         res.status(200).json({
-            error: 'false',
-            message: 'data berhasil diambil',
-            data: rows,
-         });
-      }
-   });
-};
-
 module.exports = {
-   uploadImage,
-   showImagesId,
-   showMataImg,
+   ImgUpload,
 };

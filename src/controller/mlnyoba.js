@@ -22,190 +22,46 @@ const storage = new Storage({
 
 const bucketName = 'renatic-image';
 const bucket = storage.bucket(bucketName);
-//SELECT k.*, p.tanggalLahir FROM klinis k JOIN patients p ON k.patient = p.idPatient WHERE idPatient = ?`;
+
 const tesklinis = (req, res) => {
-   //key checking
    let id = req.headers.id;
+   const img = req.image.publicUrl;
+   const Pregnancies = parseFloat(req.data.Pregnancies);
+   const Glucose = parseFloat(req.data.Glucose);
+   const BloodPressure = parseFloat(req.data.BloodPressure);
+   const SkinThickness = parseFloat(req.data.SkinThickness);
+   const Insulin = parseFloat(req.data.Insulin);
+   const BMI = parseFloat(req.data.BMI);
+   const DiabetesPedigreeFunction = parseFloat(
+      req.data.DiabetesPedigreeFunction
+   );
 
-   const {
-      Pregnancies,
-      Glucose,
-      BloodPressure,
-      SkinThickness,
-      Insulin,
-      BMI,
-      DiabetesPedigreeFunction,
-   } = req.body;
-
-   if (!id) {
-      return res.status(417).json({
-         error: 'true',
-         message: 'pasien tidak ditemukan',
-      });
-   }
-
-   const allowedKeys = [
-      'Pregnancies',
-      'Glucose',
-      'BloodPressure',
-      'SkinThickness',
-      'Insulin',
-      'BMI',
-      'DiabetesPedigreeFunction',
-   ];
-   const receivedKeys = Object.keys(req.body);
-
-   // Check if any received key is not allowed
-   const invalidKeys = receivedKeys.filter((key) => !allowedKeys.includes(key));
-
-   if (invalidKeys.length > 0) {
-      return res.status(400).json({
-         error: 'true',
-         message: `key tidak sesuai: ${invalidKeys.join(', ')}`,
-      });
-   }
-   if (
-      !Pregnancies ||
-      !Glucose ||
-      !BloodPressure ||
-      !SkinThickness ||
-      !Insulin ||
-      !BMI ||
-      !DiabetesPedigreeFunction
-   ) {
-      const emptyFields = [];
-
-      if (!Pregnancies) {
-         emptyFields.push('Pregnancies');
-      }
-      if (!Glucose) {
-         emptyFields.push('Glucose');
-      }
-      if (!BloodPressure) {
-         emptyFields.push('BloodPressure');
-      }
-      if (!SkinThickness) {
-         emptyFields.push('SkinThickness');
-      }
-      if (!Insulin) {
-         emptyFields.push('Insulin');
-      }
-      if (!BMI) {
-         emptyFields.push('BMI');
-      }
-      if (!DiabetesPedigreeFunction) {
-         emptyFields.push('DiabetesPedigreeFunction');
-      }
-
-      return res.status(417).json({
-         error: 'true',
-         message: 'Data cannot be empty',
-         emptyFields: emptyFields,
-      });
-   }
-   //key checking end
-
-   //age counting
-   const getAge = `SELECT tanggalLahir FROM patients WHERE idPatient = ?`;
-   connection.query(getAge, [id], (err, rows) => {
-      let id = req.headers.id;
-      if (err) {
-         res.status(500).send({
-            error: 'true',
-            message: 'Terjadi kesalahan pada server',
-            err,
-         });
-      }
-      // console.log(getAge);
-      if (rows.length === 0) {
-         return res.status(417).json({
-            error: 'true',
-            message: 'tidak ada isi',
-         });
-      }
-
-      // Retrieve the birthdate from the database rows
-      const birthDate = new Date(rows[0].tanggalLahir);
-
-      // Calculate the age based on the current date
-      const currentDate = new Date();
-      const ageInMilliseconds = currentDate - birthDate;
-      const ageInYears = Math.floor(
-         ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25)
-      );
-
-      console.log('Age:', ageInYears);
-      //age counting end
-
-      axios
-         .post('https://clinic-nhldbkcx5q-et.a.run.app/', {
-            Pregnancies,
-            Glucose,
-            BloodPressure,
-            SkinThickness,
-            Insulin,
-            BMI,
-            DiabetesPedigreeFunction,
-            ageInYears,
-         })
-         .then((response) => {
-            multerUpload.single('image')(req, res, (err) => {
-               if (err instanceof multer.MulterError) {
-                  return res.status(400).json({
-                     error: 'true',
-                     message: 'file tidak berhasil diupload',
-                  });
-               } else if (err) {
-                  return res.status(500).json({
-                     error: 'true',
-                     message: 'terjadi kesalahan pada server',
-                  });
-               }
-
-               if (!req.file) {
-                  return res.status(400).json({
-                     error: 'true',
-                     message: 'file gambar tidak ditemukan',
-                  });
-               }
-
-               const originalName = req.file.originalname;
-               const fileName = Date.now() + '_' + originalName;
-
-               const file = bucket.file(fileName);
-               const stream = file.createWriteStream({
-                  metadata: {
-                     contentType: req.file.mimetype,
-                  },
-               });
+   const qry = `INSERT INTO dataSkrining (patient, pregnancies,glucose,blood,skin,insulin,bmi,diabetesDegree,gambar) VALUES (?,?,?,?,?,?,?,?,?)`;
+   connection.query(
+      qry,
+      [
+         id,
+         Pregnancies,
+         Glucose,
+         BloodPressure,
+         SkinThickness,
+         Insulin,
+         BMI,
+         DiabetesPedigreeFunction,
+         img,
+      ],
+      (err, result) => {
+         if (err) {
+            res.status(500).send({
+               error: 'true',
+               message: 'Terjadi kesalahan pada server',
+               err,
             });
-            stream.on('error', (err) => {
-               console.error(err);
-               res.status(500).send({
-                  error: 'true',
-                  message: 'Gagal meng-upload gambar',
-               });
-            });
-
-            stream.on('finish', () => {
-               axios
-                  .post('https://imgrenatic-nhldbkcx5q-et.a.run.app/predict', {
-                     image_url: publicUrl,
-                  })
-                  .then((response) => {
-                     console.log('Image uploaded successfully:', response.data);
-                     res.status(200).send('Image uploaded successfully');
-                  })
-                  .catch((error) => {
-                     console.error('Error uploading image:', error);
-                     res.status(500).send('Error uploading image');
-                  });
-            });
-
-            addDataKlinis = `INSERT INTO dataSkrining(patient, pregnancies, glucose, blood, skin, insulin, bmi, diabetesDegree) VALUES (?,?,?,?,?,?,?,?)`;
-            connection.query(
-               addDataKlinis,
-               [
+         } else {
+            res.status(200).send({
+               error: 'false',
+               message: 'berhasil',
+               data: {
                   id,
                   Pregnancies,
                   Glucose,
@@ -214,34 +70,84 @@ const tesklinis = (req, res) => {
                   Insulin,
                   BMI,
                   DiabetesPedigreeFunction,
-               ],
-               (err, rows) => {
-                  if (err) {
-                     res.status(500).send({
-                        error: 'true',
-                        message: 'Terjadi kesalahan pada server',
-                     });
-                  } else {
-                     res.status(201).json({
-                        error: 'false',
-                        message: 'data berhasil ditambahkan',
-                        result,
-                        transformedData,
-                        // data: result, gatau ada result ato ga kalo post
-                     });
-                  }
-               }
-            );
-         })
-         .catch((err) => {
-            // Handle errors
-            return res.status(500).json({
-               error: 'true',
-               message: 'API tidak ditemukan',
-               err,
+                  img,
+               },
             });
-         });
-   });
+         }
+      }
+   );
+   // console.log(img);
+   // console.log(data);
+   // return res.send('a');
 };
 
-module.exports = { tesklinis };
+const scanML = async (req, res) => {
+   // const data = req.body;
+   // console.log(data);
+   const id = req.body.id;
+   const image_url = req.body.img;
+   const Pregnancies = req.body.Pregnancies;
+   const Glucose = req.body.Glucose;
+   const BloodPressure = req.body.BloodPressure;
+   const SkinThickness = req.body.SkinThickness;
+   const Insulin = req.body.Insulin;
+   const BMI = req.body.BMI;
+   const DiabetesPedigreeFunction = req.body.DiabetesPedigreeFunction;
+
+   const formKlinis = await axios
+      .post('https://clinic-nhldbkcx5q-et.a.run.app/', {
+         Pregnancies,
+         Glucose,
+         BloodPressure,
+         SkinThickness,
+         Insulin,
+         BMI,
+         DiabetesPedigreeFunction,
+      })
+      .then((response) => {
+         const result = response.data;
+         // console.log(result);
+         return result;
+      })
+      .catch((err) => {
+         // Handle errors
+         return res.status(500).json({
+            error: 'true',
+            message: 'API tidak ditemukan',
+            err,
+         });
+      });
+
+   const imgKlinis = await axios
+      .post('https://imgrenatic-nhldbkcx5q-et.a.run.app/predict', {
+         image_url,
+      })
+      .then((response) => {
+         const imgresult = response.data;
+         // console.log(result);
+         return imgresult;
+      })
+      .catch((err) => {
+         return res.status(500).json({
+            error: 'true',
+            message: 'API tidak ditemukan',
+            err,
+         });
+      });
+   console.log(formKlinis);
+   console.log(imgKlinis);
+   const resultData = {
+      Pregnancies,
+      Glucose,
+      BloodPressure,
+      SkinThickness,
+      Insulin,
+      BMI,
+      DiabetesPedigreeFunction,
+      formKlinis,
+      imgKlinis,
+   };
+   res.send(resultData);
+};
+
+module.exports = { tesklinis, scanML };

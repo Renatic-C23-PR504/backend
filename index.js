@@ -13,3 +13,10 @@ app.use('/', router);
 app.listen(port, () => {
    console.log(`http://localhost:${port}/`);
 });
+
+// const fs = require('fs');
+
+// const imageFilePath = 'a.png';
+// const imageData = fs.readFileSync(imageFilePath).toString('base64');
+
+// console.log(imageData);

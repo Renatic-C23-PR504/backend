@@ -29,10 +29,10 @@ const {
    showMataImg,
 } = require('../src/controller/imageUpload');
 
-const { tesklinis } = require('../src/controller/mlnyoba');
+const { tesklinis, scanML } = require('../src/controller/mlnyoba');
 //testing
 router.get('/all', all);
-router.post('/tesklinis', tesklinis);
+
 //user
 router.post('/register', registerUser);
 router.post('/login', loginUser);
@@ -45,13 +45,16 @@ router.post('/search', auth, search);
 router.post('/editpatient/:id', auth, editPatients);
 router.get('/showdatapatient/:id', auth, showDataPatient);
 
+//ML
+router.post('/tesklinis', uploadImage, tesklinis);
+router.post('/scanml', scanML);
+
 //klinis
 router.get('/allKlinis', allKlinis);
 router.post('/addklinis', addKlinis);
 router.get('/dataklinis/:id', getDataKlinis);
 router.get('/klinispatient/:id', getKlinisPatient);
 
-// router.post('/uploadimg', uploadIMG);
 router.post('/upload', uploadImage);
 router.get('/historymata/:id', showImagesId);
 router.get('/mata/:id', showMataImg);

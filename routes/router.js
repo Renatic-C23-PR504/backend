@@ -29,7 +29,12 @@ const {
    showMataImg,
 } = require('../src/controller/imageUpload');
 
-const { tesklinis, scanML } = require('../src/controller/mlnyoba');
+const {
+   tesklinis,
+   scanML,
+   satuSkrining,
+   satuSkriningPasien,
+} = require('../src/controller/mlnyoba');
 //testing
 router.get('/all', all);
 
@@ -48,6 +53,8 @@ router.get('/showdatapatient/:id', auth, showDataPatient);
 //ML
 router.post('/tesklinis', uploadImage, tesklinis);
 router.post('/scanml', scanML);
+router.get('/skrining', satuSkrining);
+router.get('/skriningpasien', satuSkriningPasien);
 
 //klinis
 router.get('/allKlinis', allKlinis);

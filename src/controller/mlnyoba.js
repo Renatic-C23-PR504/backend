@@ -147,7 +147,48 @@ const scanML = async (req, res) => {
       formKlinis,
       imgKlinis,
    };
-   res.send(resultData);
+   res.status(500).json({
+      error: 'false',
+      message: 'scan berhasil',
+      data: resultData,
+   });
 };
 
-module.exports = { tesklinis, scanML };
+const satuSkrining = (req, res) => {
+   let id = req.params.id;
+   const satuData = `SELECT * from dataSkrining WHERE idSkrining = ?`;
+   connection.query(satuData, [id], (err, rows) => {
+      if (err) {
+         res.status(500).send({
+            error: 'true',
+            message: 'Terjadi kesalahan pada server',
+         });
+      } else {
+         res.status(200).json({
+            error: 'false',
+            message: 'data berhasil diambil',
+            data: rows,
+         });
+      }
+   });
+};
+
+const satuSkriningPasien = (req, res) => {
+   let id = req.params.id;
+   const satuData = `SELECT * from dataSkrining WHERE patient = ? ORDER BY idSkrining DESC`;
+   connection.query(satuData, [id], (err, rows) => {
+      if (err) {
+         res.status(500).send({
+            error: 'true',
+            message: 'Terjadi kesalahan pada server',
+         });
+      } else {
+         res.status(200).json({
+            error: 'false',
+            message: 'data berhasil diambil',
+            data: rows,
+         });
+      }
+   });
+};
+module.exports = { tesklinis, scanML, satuSkrining, satuSkriningPasien };

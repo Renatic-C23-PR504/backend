@@ -22,9 +22,6 @@ const bucket = storage.bucket(bucketName);
 
 const uploadImage = (req, res, next) => {
    multerUpload.single('image')(req, res, (err) => {
-      // console.log(req.body);
-      // console.log(req.body.Pregnancies);
-      // console.log(req.file);
       if (err instanceof multer.MulterError) {
          return res
             .status(400)

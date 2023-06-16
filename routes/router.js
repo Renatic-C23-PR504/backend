@@ -1,6 +1,5 @@
 const express = require('express');
 const auth = require('../src/auth');
-// const userController = require('../src/controller/app');
 const router = express.Router();
 const {
    all,
@@ -16,13 +15,6 @@ const {
    editPatients,
    showDataPatient,
 } = require('../src/controller/patients');
-const {
-   allKlinis,
-   addKlinis,
-   getDataKlinis,
-   getKlinisPatient,
-} = require('../src/controller/klinis');
-// const { uploadIMG } = require('../imageUpload');
 const {
    uploadImage,
    showImagesId,
@@ -55,12 +47,6 @@ router.post('/tesklinis', uploadImage, tesklinis);
 router.post('/scanml', scanML);
 router.get('/skrining/:id', satuSkrining);
 router.get('/skriningpasien/:id', satuSkriningPasien);
-
-//klinis
-router.get('/allKlinis', allKlinis);
-router.post('/addklinis', addKlinis);
-router.get('/dataklinis/:id', getDataKlinis);
-router.get('/klinispatient/:id', getKlinisPatient);
 
 router.post('/upload', uploadImage);
 router.get('/historymata/:id', showImagesId);

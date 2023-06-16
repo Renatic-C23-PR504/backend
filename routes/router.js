@@ -53,8 +53,8 @@ router.get('/showdatapatient/:id', auth, showDataPatient);
 //ML
 router.post('/tesklinis', uploadImage, tesklinis);
 router.post('/scanml', scanML);
-router.get('/skrining', satuSkrining);
-router.get('/skriningpasien', satuSkriningPasien);
+router.get('/skrining/:id', satuSkrining);
+router.get('/skriningpasien/:id', satuSkriningPasien);
 
 //klinis
 router.get('/allKlinis', allKlinis);

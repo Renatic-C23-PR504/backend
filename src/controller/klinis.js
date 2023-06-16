@@ -173,7 +173,7 @@ const addKlinis = (req, res) => {
 const getDataKlinis = (req, res) => {
    let id = req.params.id;
 
-   const allDataKlinis = `SELECT k.*, p.tanggalLahir FROM klinis k JOIN patients p ON k.patient = p.idPatient WHERE idKlinis = ?`;
+   const allDataKlinis = `SELECT * FROM dataSkrining WHERE idSkrining = ?`;
    connection.query(allDataKlinis, [id], (err, rows) => {
       if (err) {
          res.status(500).send({
